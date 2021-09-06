@@ -40,27 +40,36 @@
     <main role="main" class="pb-3">
         <br /><br /><br />
 
-        <form>
-            <div class="row d-flex justify-content-center">
-                <div class="col-sm-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Login</h5>
-                            <div class="form-group">
-                                <input type="text" class="form-control" id="username" placeholder="Username">
-                            </div>
+                    <form method="post" action="">
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-sm-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Login</h5>
+                                        <div class="form-group">
+                                            <input type="email" class="form-control" name="email" placeholder="Email">
+                                        </div>
 
-                            <div class="form-group">
-                                <input type="password" class="form-control" id="password" placeholder="Password">
-                            </div>
+                                        <div class="form-group">
+                                            <input type="password" class="form-control" name="password" placeholder="Password">
+                                        </div>
 
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-primary">Login</button>
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-primary">Login</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </form>
+                    </form>
+
+        @{ if (Request.Method == "POST")
+           {
+                <p>
+                    Email: @Request.Form["email"];<br />
+                    Password: @Request.Form["password"];<br />
+                </p>
+           } 
+        }
     </main>
 </div>
