@@ -63,7 +63,8 @@
                         </div>
                     </form>
 
-        @{ if (Request.Method == "POST")
+        @{ 
+           if (Request.Method == "POST")
            {
                 <p>
                     Email: @Request.Form["email"];<br />
