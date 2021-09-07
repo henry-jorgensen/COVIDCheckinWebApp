@@ -5,6 +5,11 @@
 @using System.Configuration;
 @{
     ViewData["Title"] = "Registration";
+
+    if (Request.Cookies["email"]!=null && Request.Cookies["email"] != null)
+    {
+        Response.Redirect("Index");
+    }
 }
 
 <header>
@@ -57,15 +62,15 @@
                             </div>
 
                             <div class="form-group">
-                                <input type="tel" class="form-control" name="phone" placeholder="Contact number..." required autocomplete="tel">
+                                <input type="tel" class="form-control" name="phone" placeholder="Contact number..." pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
                             </div>
 
                             <div class="form-group">
-                                <input type="password" class="form-control" name="password" placeholder="Password..." required>
+                                <input type="password" class="form-control" name="password" placeholder="Password..." id="password" required>
                             </div>
 
                             <div class="form-group">
-                                <input type="password" class="form-control" name="password2" placeholder="Confirm password..." required>
+                                <input type="password" class="form-control" name="password2" placeholder="Confirm password..." id="password2" oninput="matchPassword(this)" required>
                             </div>
 
                             <div class="form-group">
@@ -88,28 +93,38 @@
                             </div>
 
                             <div class="form-group">
-                                <input type="tel" class="form-control" name="businessnumber" placeholder="Business phone number..." required autocomplete="tel">
+                                <input type="tel" class="form-control" name="businessnumber" placeholder="Business phone number..." pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
                             </div>
                         </div>
                     </div>
+
+                    @{
+                        if (Request.Method == "POST")
+                        {
+                            Response.Cookies.Append("email", Request.Form["email"]);
+                            Response.Cookies.Append("phone", Request.Form["phone"]);
+                            Response.Cookies.Append("password", Request.Form["password"]);
+                            Response.Cookies.Append("password2", Request.Form["password2"]);
+                            Response.Cookies.Append("bname", Request.Form["businessname"]);
+                            Response.Cookies.Append("baddress", Request.Form["businessowner"]);
+                            Response.Cookies.Append("bowner", Request.Form["businessaddress"]);
+                            Response.Cookies.Append("bnumber", Request.Form["businessnumber"]);
+
+                            Response.Redirect("Index");
+                        }
+                    }
                 </form>
             </div>
         </div>
-
-        @{ 
-            if (Request.Method == "POST")
-            {
-                <p>
-                    Email: @Request.Form["email"]<br />
-                    Phone: @Request.Form["phone"]<br />
-                    Password: @Request.Form["password"]<br />
-                    Confirm Password: @Request.Form["password2"]<br />
-                    Business name: @Request.Form["businessname"]<br />
-                    Business address: @Request.Form["businessowner"]<br />
-                    Business owner: @Request.Form["businessaddress"]<br />
-                    Business number: @Request.Form["businessnumber"]<br />
-                </p> 
-            } 
-        }
     </main>
 </div>
+
+<script language='javascript' type='text/javascript'>
+    function matchPassword(password) {
+        if (password.value != document.getElementById('password').value) {
+            password.setCustomValidity('Passwords must match.');
+        } else {
+            password.setCustomValidity('');
+        }
+    }
+</script >

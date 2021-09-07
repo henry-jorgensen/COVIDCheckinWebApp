@@ -1,0 +1,9 @@
+﻿@page
+@{
+    ViewData["Title"] = "Logout";
+
+    Response.Cookies.Delete("email");
+    Response.Cookies.Delete("password");
+
+    Response.Redirect("Index");
+}
