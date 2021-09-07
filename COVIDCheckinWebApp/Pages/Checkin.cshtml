@@ -1,6 +1,29 @@
 ﻿@page
 @{
     ViewData["Title"] = "Checkin";
+
+    // var db = Database.Open("databaseName");
+
+    string fName = Request.Query["fName"];
+    string lName = Request.Query["lName"];
+    string phone = Request.Query["phoneNum"];
+
+
+    //if (!String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(lName) && !String.IsNullOrWhiteSpace(phone))
+    //{
+    //    fName = fName.ToUpper();
+    //    lName = lName.ToUpper();
+
+    //    var userQuery = "SELECT TOP 1 uniqueId FROM Users WHERE firstName = @0 AND lastName = @1 AND phoneNumber = @2";
+    //    // var userID = db.QuerySingle(userQuery, fName, lName, phone);
+    //    if (userID == null)
+    //    {
+    //        var addUserQuery = "INSERT INTO Users (firstName, lastName, phoneNumber) VALUES (@0, @1, @2)";
+    //    }
+    //}
+
+    System.Diagnostics.Debug.WriteLine(fName + ",   " + lName + ",   " + phone);
+
 }
 
 <header>
@@ -34,3 +57,28 @@
         </div>
     </nav>
 </header>
+
+<body>
+    <div class="col-4 m-4">
+        <form method="get">
+            <div class="row">
+                <label for="fName">First Name: </label>
+                <input type="text" name="fName" class="form-control" maxlength="100" required />
+            </div>
+
+            <div class="row mt-4">
+                <label for="lName">Last Name: </label>
+                <input type="text" name="lName" class="form-control" maxlength="100" required />
+            </div>
+
+            <div class="row mt-4">
+                <label for="phoneNum">Phone Number: </label>
+                <input type="tel" name="phoneNum" class="form-control" pattern="0[0-9]{3}[0-9]{2}[0-9]{3}" required />
+            </div>
+
+            <div class="row mt-4">
+                <button type="submit" class="btn btn-primary">Check in</button>
+            </div>
+        </form>
+    </div>
+</body>
