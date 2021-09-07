@@ -5,6 +5,26 @@
 @using System.Configuration;
 @{
     ViewData["Title"] = "Registration";
+
+    var businessname = "";
+    var businessowner = "";
+    var businessaddress = "";
+    var businessnumber = "";
+
+    var terminalID = "";
+
+    if (Request.Method == "POST")
+    {
+        businessname = Request.Form["businessname"];
+        businessowner = Request.Form["businessowner"];
+        businessaddress = Request.Form["businessaddress"];
+        businessnumber = Request.Form["businessnumber"];
+
+        //Insert into database
+
+        terminalID = Request.Form["businessnumber"];
+
+    }
 }
 
 <header>
@@ -40,76 +60,118 @@
     </nav>
 </header>
 
-<div class="container">
-    <main role="main" class="pb-3">
-        <br /><br /><br />
+<body onload="setCookie('terminalID', @terminalID, 365)">
+    <div class="container">
+        <main role="main" class="pb-3">
+            <br /><br /><br />
 
-        <div class="card">
-            <div class="card-body">
-                <form method="post" action="">
-                    <div class="row d-flex justify-content-center">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" action="">
+                        <div class="row d-flex justify-content-center">
 
 
-                        <div class="col-sm-6">
-                            <h5 class="card-title">Your details</h5>
-                            <div class="form-group">
-                                <input type="email" class="form-control" name="email" placeholder="Email..." required>
+                            <div class="col-sm-6">
+                                <h5 class="card-title">Your details</h5>
+                                <div class="form-group">
+                                    <input type="email" class="form-control" name="email" placeholder="Email..." required>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="tel" class="form-control" name="phone" placeholder="Contact number..." required autocomplete="tel">
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="password" class="form-control" name="password" placeholder="Password..." required>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="password" class="form-control" name="password2" placeholder="Confirm password..." required>
+                                </div>
+
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">Register</button>
+                                </div>
                             </div>
 
-                            <div class="form-group">
-                                <input type="tel" class="form-control" name="phone" placeholder="Contact number..." required autocomplete="tel">
-                            </div>
+                            <div class="col-sm-6">
+                                <h5 class="card-title">Store details</h5>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="businessname" placeholder="Business name..." required>
+                                </div>
 
-                            <div class="form-group">
-                                <input type="password" class="form-control" name="password" placeholder="Password..." required>
-                            </div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="businessowner" placeholder="Business owner..." required>
+                                </div>
 
-                            <div class="form-group">
-                                <input type="password" class="form-control" name="password2" placeholder="Confirm password..." required>
-                            </div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="businessaddress" placeholder="Business address..." required>
+                                </div>
 
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-primary">Register</button>
+                                <div class="form-group">
+                                    <input type="tel" class="form-control" name="businessnumber" placeholder="Business phone number..." required autocomplete="tel">
+                                </div>
                             </div>
                         </div>
-
-                        <div class="col-sm-6">
-                            <h5 class="card-title">Store details</h5>
-                            <div class="form-group">
-                                <input type="text" class="form-control" name="businessname" placeholder="Business name..." required>
-                            </div>
-
-                            <div class="form-group">
-                                <input type="text" class="form-control" name="businessowner" placeholder="Business owner..." required>
-                            </div>
-
-                            <div class="form-group">
-                                <input type="text" class="form-control" name="businessaddress" placeholder="Business address..." required>
-                            </div>
-
-                            <div class="form-group">
-                                <input type="tel" class="form-control" name="businessnumber" placeholder="Business phone number..." required autocomplete="tel">
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
-        </div>
 
-        @{ 
-            if (Request.Method == "POST")
-            {
-                <p>
-                    Email: @Request.Form["email"]<br />
-                    Phone: @Request.Form["phone"]<br />
-                    Password: @Request.Form["password"]<br />
-                    Confirm Password: @Request.Form["password2"]<br />
-                    Business name: @Request.Form["businessname"]<br />
-                    Business address: @Request.Form["businessowner"]<br />
-                    Business owner: @Request.Form["businessaddress"]<br />
-                    Business number: @Request.Form["businessnumber"]<br />
-                </p> 
-            } 
-        }
-    </main>
-</div>
+            <button onclick="checkCookie()">check cookie</button>
+            <button onclick="deleteCookie()">delete cookie</button>
+
+            <script>
+                function setCookie(cname, cvalue, exdays) {
+                    const d = new Date();
+                    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+                    let expires = "expires=" + d.toUTCString();
+                    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+                }
+
+                function getCookie(cname) {
+                    let name = cname + "=";
+                    let ca = document.cookie.split(';');
+                    for (let i = 0; i < ca.length; i++) {
+                        let c = ca[i];
+                        while (c.charAt(0) == ' ') {
+                            c = c.substring(1);
+                        }
+                        if (c.indexOf(name) == 0) {
+                            return c.substring(name.length, c.length);
+                        }
+                    }
+                    return "";
+                }
+
+                function checkCookie() {
+                    let terminalID = getCookie("terminalID");
+                    if (terminalID != "") {
+                        alert("Terminal ID: " + terminalID);
+                    }
+                }
+
+                function deleteCookie() {
+                    document.cookie = "terminalID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+                }
+            </script>
+
+            @{
+                if (Request.Method == "POST")
+                {
+                    <p>
+                        Email: @Request.Form["email"]<br />
+                        Phone: @Request.Form["phone"]<br />
+                        Password: @Request.Form["password"]<br />
+                        Confirm Password: @Request.Form["password2"]<br />
+                        Business name: @Request.Form["businessname"]<br />
+                        Business address: @Request.Form["businessowner"]<br />
+                        Business owner: @Request.Form["businessaddress"]<br />
+                        Business number: @Request.Form["businessnumber"]<br />
+                        TerminalID: @terminalID <br />
+                    </p>
+                }
+            }
+
+        </main>
+    </div>
+</body>
