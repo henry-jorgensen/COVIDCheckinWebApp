@@ -1,12 +1,13 @@
 ﻿@page
+@using System;
+@using System.Configuration;
+@using System.Data.SqlClient;
 @{
     ViewData["Title"] = "Checkin";
 
     // var db = Database.Open("databaseName");
 
-    string fName = Request.Query["fName"];
-    string lName = Request.Query["lName"];
-    string phone = Request.Query["phoneNum"];
+
 
 
     //if (!String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(lName) && !String.IsNullOrWhiteSpace(phone))
@@ -22,7 +23,50 @@
     //    }
     //}
 
-    System.Diagnostics.Debug.WriteLine(fName + ",   " + lName + ",   " + phone);
+    if (Request.Method == "POST")
+    {
+        string fName = Request.Form["fName"];
+        string lName = Request.Form["lName"];
+        string phone = Request.Form["phoneNum"];
+        string connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
+        SqlConnection connection = new SqlConnection(@connectionString);
+        string userQuery = "INSERT INTO Users (firstName, lastName, phoneNumber) VALUES(@fName, @lName, @pNum)";
+        SqlCommand userCommand = new SqlCommand(userQuery, connection);
+
+        userCommand.Parameters.AddWithValue("@fName", "Guy");
+        userCommand.Parameters.AddWithValue("@lName", "Guyson");
+        userCommand.Parameters.AddWithValue("@pNum", "0466666666");
+
+        string logQuery = "INSERT INTO CheckinLogs (dateLog, venueId, uniqueId) VALUES(@theDate, @venueId, @uniqueId)";
+        SqlCommand logCommand = new SqlCommand(logQuery, connection);
+
+        logCommand.Parameters.AddWithValue("@theDate", DateTime.Now);
+        logCommand.Parameters.AddWithValue("@venueId", Request.Cookies["venueId"]);
+        logCommand.Parameters.AddWithValue("@uniqueId", 9);
+
+        string selectLastQuery = "SELECT TOP 1 uniqueId FROM Users ORDER BY uniqueId DESC";
+        SqlCommand idCommand = new SqlCommand(selectLastQuery, connection);
+
+        try
+        {
+            connection.Open();
+            userCommand.ExecuteNonQuery();
+            logCommand.ExecuteNonQuery();
+            Console.WriteLine("Records Inserted Successfully");
+        }
+        catch (SqlException e)
+        {
+            Console.WriteLine("Error Generated. Details: " + e.ToString());
+        }
+        finally
+        {
+            connection.Close();
+        }
+
+        System.Diagnostics.Debug.WriteLine(fName + ",   " + lName + ",   " + phone);
+    }
+
+
 
 }
 
@@ -60,7 +104,7 @@
 
 <body>
     <div class="col-4 m-4">
-        <form method="get">
+        <form method="post">
             <div class="row">
                 <label for="fName">First Name: </label>
                 <input type="text" name="fName" class="form-control" maxlength="100" required />
