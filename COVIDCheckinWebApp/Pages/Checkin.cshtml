@@ -113,7 +113,7 @@
 
 <body>
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main" class="pb-3 align-self-center">
             <br /><br /><br />
             <div class="card">
                 <div class="card-body">
@@ -122,7 +122,7 @@
                             <h5 class="card-title">Placeholder...</h5>
                         </div>
                         <div class="col-sm-6">
-                            <form method="post" action="">
+                            <form method="post" id="manualForm" action="">
                                 <h5 class="card-title">Don't have a username? Check-in manually</h5>
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="firstName" maxlength="100" placeholder="Given name..." required>
@@ -137,7 +137,10 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-primary">Check-in</button>
+                                    <button type="submit" id="manualSubmit" class="btn btn-primary" onsubmit="">Check-in</button>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#manualSuccessful">
+                                        Test modal
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -146,4 +149,37 @@
             </div>
         </main>
     </div>
+
+    <div class="modal fade" id="manualSuccessful" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Success!</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" fill="green" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                    </svg>
+                    <p class="h3 justify-content-center">You have successfully checked into @Request.Cookies["bname"].</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $('#manualForm').on('submit', function (e) {
+        var formId = this.id,
+            form = this;
+        e.preventDefault();
+
+        $('#manualSuccessful').modal('show');
+        setTimeout(function () {
+            form.submit();
+        }, 5000);
+    });
+</script>
