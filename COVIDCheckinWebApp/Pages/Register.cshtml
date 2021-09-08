@@ -1,17 +1,84 @@
 ﻿@page
-@using System; 
 @using System.Web;
 @using System.Linq;
 @using System.Data.SqlClient;
 @using System.Configuration;
+
 @{
     ViewData["Title"] = "Registration";
+
+    String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
+    SqlConnection db = new SqlConnection(connectionString);
+
+
+    var email = "";
+    var phone = "";
+    var password = "";
+    var businessName = "";
+    var businessOwner = "";
+    var businessAddress = "";
+    var businessNumber = "";
+    var venueIdString = "";
 
     if (Request.Cookies["email"]!=null && Request.Cookies["email"] != null)
     {
         Response.Redirect("Index");
     }
+
+    if (Request.Method == "POST")
+    {
+        email = Request.Form["email"];
+        phone = Request.Form["phone"];
+        password = Request.Form["password"];
+        businessName = Request.Form["businessname"];
+        businessOwner = Request.Form["businessowner"];
+        businessAddress = Request.Form["businessaddress"];
+        businessNumber = Request.Form["businessnumber"];
+
+        email = email.ToUpper();
+        businessName = businessName.ToUpper();
+        businessOwner = businessOwner.ToUpper();
+        businessAddress = businessAddress.ToUpper();
+
+
+
+
+        SqlCommand checkExisting = new SqlCommand("SELECT venueId FROM Venue WHERE venueName = @0 AND venueAddress = @1", db);
+        checkExisting.Parameters.AddWithValue("@0", businessName);
+        checkExisting.Parameters.AddWithValue("@1", businessAddress);
+
+        db.Open();
+        var checkExistingId = checkExisting.ExecuteScalar();
+
+        if (checkExistingId != null)
+        {
+            venueIdString = checkExistingId.ToString();
+        }
+        else
+        {
+            SqlCommand insert = new SqlCommand("INSERT [Venue] ([ownerEmail], [ownerPhone], [ownerPassword], [venueName], [venueOwner], [venueAddress], [venuePhone])" +
+            "VALUES(@0, @1, @2, @3, @4, @5, @6)", db);
+            insert.Parameters.AddWithValue("@0", email);
+            insert.Parameters.AddWithValue("@1", phone);
+            insert.Parameters.AddWithValue("@2", password);
+            insert.Parameters.AddWithValue("@3", businessName);
+            insert.Parameters.AddWithValue("@4", businessOwner);
+            insert.Parameters.AddWithValue("@5", businessAddress);
+            insert.Parameters.AddWithValue("@6", businessNumber);
+
+            insert.ExecuteNonQuery();
+
+            SqlCommand getLastId = new SqlCommand("SELECT TOP 1 venueId FROM Venue ORDER BY venueId DESC", db);
+
+            var venueId = getLastId.ExecuteScalar();
+            Console.WriteLine("Venue ID: " + venueId);
+            venueIdString = venueId.ToString();
+        }
+
+        Response.Cookies.Append("venueId", venueIdString);
+    }
 }
+
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJG02FQOVVRvnAMzRdFvNo9QLLcBsNLIY&libraries=places&callback=initialize"></script>
 
@@ -92,7 +159,7 @@
                             </div>
 
                             <div class="form-group">
-                                <input type="text" class="form-control" name="businessaddress" id="businessaddress" placeholder="Business address..." required>
+                                <input type="text" class="form-control" name="businessaddress" placeholder="Business address..." required>
                             </div>
 
                             <div class="form-group">
@@ -109,8 +176,8 @@
                             Response.Cookies.Append("password", Request.Form["password"]);
                             Response.Cookies.Append("password2", Request.Form["password2"]);
                             Response.Cookies.Append("bname", Request.Form["businessname"]);
-                            Response.Cookies.Append("baddress", Request.Form["businessowner"]);
-                            Response.Cookies.Append("bowner", Request.Form["businessaddress"]);
+                            Response.Cookies.Append("bowner", Request.Form["businessowner"]);
+                            Response.Cookies.Append("baddress", Request.Form["businessaddress"]);
                             Response.Cookies.Append("bnumber", Request.Form["businessnumber"]);
 
                             Response.Redirect("Index");
@@ -130,11 +197,12 @@
             password.setCustomValidity('');
         }
     }
-
     function initialize() {
         var input = document.getElementById('businessaddress');
         new google.maps.places.Autocomplete(input);
     }
 
     google.maps.event.addDomListener(window, 'load', initialize);
-</script >
+
+
+</script>

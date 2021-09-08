@@ -12,7 +12,7 @@
     // Form check.
     if (Request.Method == "POST")
     {
-
+        var venueId = Request.Cookies["venueId"];
         string fName = Request.Form["firstName"];
         string lName = Request.Form["lastName"];
         string phone = Request.Form["contact"];
@@ -51,7 +51,7 @@
                 addNewUser.ExecuteNonQuery();
 
                 // Selecting newly added Users uniqueId.
-                SqlCommand idCommand = new SqlCommand("SELECT uniqueId FROM Users WHERE firstName = @firstName AND lastName = @lastName AND phoneNumber = @phoneNum", db);
+                SqlCommand idCommand = new SqlCommand("SELECT uniqueId FROM Users WHERE firstName = @fName AND lastName = @lName AND phoneNumber = @pNum", db);
 
                 idCommand.Parameters.AddWithValue("@fName", fName);
                 idCommand.Parameters.AddWithValue("@lName", lName);
@@ -67,7 +67,7 @@
 
             // Query parameters.
             logCommand.Parameters.AddWithValue("@theDate", DateTime.Now);
-            logCommand.Parameters.AddWithValue("@venueId", 1);
+            logCommand.Parameters.AddWithValue("@venueId", venueId);
             logCommand.Parameters.AddWithValue("@uniqueId", userIDResult);
 
             // Executing query.
