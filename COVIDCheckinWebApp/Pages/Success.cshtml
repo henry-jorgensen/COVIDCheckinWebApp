@@ -1,0 +1,25 @@
+﻿@page
+@{
+
+}
+
+@{
+    if (!String.IsNullOrEmpty(Request.Query["time"]))
+    {
+        <div class="container">
+            <main role="main" class="pb-3">
+                <br /><br /><br />
+
+                <div class="row d-flex justify-content-center">
+                    Thank you for checkin in at @Request.Query["venue"]<br />
+                    Your name: @Request.Query["name"]<br />
+                    Checkin time: @Request.Query["time"]<br />
+                </div>
+            </main>
+        </div>
+    }
+}
+
+<script>window.setTimeout(function () {
+        window.location.href = 'checkin';
+    }, 4000);</script>
