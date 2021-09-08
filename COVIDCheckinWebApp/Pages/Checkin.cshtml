@@ -12,7 +12,7 @@
     // Form check.
     if (Request.Method == "POST")
     {
-
+        var venueId = Request.Cookies["venueId"];
         string fName = Request.Form["firstName"];
         string lName = Request.Form["lastName"];
         string phone = Request.Form["contact"];
@@ -67,7 +67,7 @@
 
             // Query parameters.
             logCommand.Parameters.AddWithValue("@theDate", DateTime.Now);
-            logCommand.Parameters.AddWithValue("@venueId", 1);
+            logCommand.Parameters.AddWithValue("@venueId", venueId);
             logCommand.Parameters.AddWithValue("@uniqueId", userIDResult);
 
             // Executing query.
