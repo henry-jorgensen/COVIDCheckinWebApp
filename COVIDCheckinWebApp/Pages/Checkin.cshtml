@@ -17,49 +17,24 @@
     // Checking if user is already in database, adding if not.
     if (!String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(phone))
     {
-        // Convert names to upper case.
         fName = fName.ToUpper();
         lName = lName.ToUpper();
 
-        // Params for queries.
-        SqlParameter firstName = new SqlParameter("@firstName", fName);
-        SqlParameter lastName = new SqlParameter("@lastName", lName);
-        SqlParameter phoneNum = new SqlParameter("@phoneNum", phone);
-
-        // Checks if there is a database record matching user inputs.
         SqlCommand userIDCheck = new SqlCommand("SELECT * FROM Users WHERE firstName = @firstName AND lastName = @lastName AND phoneNumber = @phoneNum", db);
 
-        // Add params to userIDCheck query.
-        userIDCheck.Parameters.Add(firstName);
-        userIDCheck.Parameters.Add(lastName);
-        userIDCheck.Parameters.Add(phoneNum);
+        userIDCheck.Parameters.AddWithValue("@firstName", fName);
+        userIDCheck.Parameters.AddWithValue("@lastName", lName);
+        userIDCheck.Parameters.AddWithValue("@phoneNum", phone);
 
-        // Open database connection.
         db.Open();
-
-        // Store userIDCheck query result.
         var userIDResult = userIDCheck.ExecuteScalar();
 
         System.Diagnostics.Debug.WriteLine(userIDResult);
 
-        // Adding user to database if no matching records returned.
         if (userIDResult == null)
         {
-            System.Diagnostics.Debug.WriteLine("It was null, better add a new User.");
-
-            // Adds new User to the database.
-            SqlCommand addNewUser = new SqlCommand("INSERT INTO Users (firstName, lastName, phoneNumber) VALUES (@firstName, @lastName, @phoneNum)", db);
-
-            // add params to addNewUser query and execute.
-            addNewUser.Parameters.Add(firstName);
-            addNewUser.Parameters.Add(lastName);
-            addNewUser.Parameters.Add(phoneNum);
-
-            addNewUser.ExecuteNonQuery();
+            System.Diagnostics.Debug.WriteLine("It was null, big sad.");
         }
-
-        // Close database connection.
-        db.Close();
     }
 
 
@@ -137,34 +112,38 @@
 </header>
 
 <body>
-    
-    <div class="col-4 m-4">
-        <form method="get">
-            <div class="row">
-                <label for="fName">First Name: </label>
-                <input type="text" name="fName" class="form-control" maxlength="100" value="Paul" required />
-            </div>
+    <div class="container">
+        <main role="main" class="pb-3">
+            <br /><br /><br />
+            <div class="card">
+                <div class="card-body">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-sm-6 border-right">
+                            <h5 class="card-title">Placeholder...</h5>
+                        </div>
+                        <div class="col-sm-6">
+                            <form method="post" action="">
+                                <h5 class="card-title">Don't have a username? Check-in manually</h5>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="firstName" maxlength="100" placeholder="Given name..." required>
+                                </div>
 
-            
-            <div class="row mt-4">
-                <label for="lName">Last Name: </label>
-                <input type="text" name="lName" class="form-control" maxlength="100" value="Smith" required />
-            </div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="lastName" maxlength="100" placeholder="Surname..." required>
+                                </div>
 
-            
-            <div class="row mt-4">
-                <label for="phoneNum">Mobile Number: </label>
-                <input type="tel" name="phoneNum" class="form-control" pattern="0[0-9]{9}||[0-9]{9}" placeholder="012345678" value="0421321321" required />
-            </div>
+                                <div class="form-group">
+                                    <input type="tel" class="form-control" name="contact" pattern="0[0-9]{9}||[0-9]{9} placeholder="Contact number..." required>
+                                </div>
 
-                                    <div class="form-group">
-                                        <button type="submit" class="btn btn-primary">Check-in</button>
-                                    </div>
-                                </form>
-                            </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">Check-in</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
+            </div>
         </main>
     </div>
 </body>
