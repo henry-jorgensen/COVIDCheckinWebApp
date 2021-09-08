@@ -36,6 +36,47 @@
             System.Diagnostics.Debug.WriteLine("It was null, big sad.");
         }
     }
+
+
+    //HENRYS CODE, WILL CONNECT WITH ABOVE
+    if (Request.Method == "POST")
+    {
+
+        string userQuery = "INSERT INTO Users (firstName, lastName, phoneNumber) VALUES(@fName, @lName, @pNum)";
+        SqlCommand userCommand = new SqlCommand(userQuery, db);
+
+        userCommand.Parameters.AddWithValue("@fName", fName);
+        userCommand.Parameters.AddWithValue("@lName", lName);
+        userCommand.Parameters.AddWithValue("@pNum", phone);
+
+        string logQuery = "INSERT INTO CheckinLogs (dateLog, venueId, uniqueId) VALUES(@theDate, @venueId, @uniqueId)";
+        SqlCommand logCommand = new SqlCommand(logQuery, db);
+
+        logCommand.Parameters.AddWithValue("@theDate", DateTime.Now);
+        logCommand.Parameters.AddWithValue("@venueId", 1);
+        logCommand.Parameters.AddWithValue("@uniqueId", 11);
+
+        //string selectLastQuery = "SELECT TOP 1 uniqueId FROM Users ORDER BY uniqueId DESC";
+        //SqlCommand idCommand = new SqlCommand(selectLastQuery, connection);
+
+        try
+        {
+            db.Open();
+            userCommand.ExecuteNonQuery();
+            logCommand.ExecuteNonQuery();
+            Console.WriteLine("Records Inserted Successfully");
+        }
+        catch (SqlException e)
+        {
+            Console.WriteLine("Error Generated. Details: " + e.ToString());
+        }
+        finally
+        {
+            db.Close();
+        }
+
+        System.Diagnostics.Debug.WriteLine(fName + ",   " + lName + ",   " + phone);
+    }
 }
 
 <header>
