@@ -1,29 +1,82 @@
 ﻿@page
+@using System;
+@using System.Configuration;
+@using System.Data.SqlClient;
 @{
     ViewData["Title"] = "Checkin";
 
-    // var db = Database.Open("databaseName");
+    // Connecting to database.
+    String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
+    SqlConnection db = new SqlConnection(connectionString);
 
+    // Getting form values from page.
     string fName = Request.Query["fName"];
     string lName = Request.Query["lName"];
     string phone = Request.Query["phoneNum"];
 
+    // Checking if user is already in database, adding if not.
+    if (!String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(phone))
+    {
+        fName = fName.ToUpper();
+        lName = lName.ToUpper();
 
-    //if (!String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(lName) && !String.IsNullOrWhiteSpace(phone))
+        SqlCommand userIDCheck = new SqlCommand("SELECT * FROM Users WHERE firstName = @firstName AND lastName = @lastName AND phoneNumber = @phoneNum", db);
+
+        userIDCheck.Parameters.AddWithValue("@firstName", fName);
+        userIDCheck.Parameters.AddWithValue("@lastName", lName);
+        userIDCheck.Parameters.AddWithValue("@phoneNum", phone);
+
+        db.Open();
+        var userIDResult = userIDCheck.ExecuteScalar();
+
+        System.Diagnostics.Debug.WriteLine(userIDResult);
+
+        if (userIDResult == null)
+        {
+            System.Diagnostics.Debug.WriteLine("It was null, big sad.");
+        }
+    }
+
+
+    ////HENRYS CODE, WILL CONNECT WITH ABOVE
+    //if (Request.Method == "POST")
     //{
-    //    fName = fName.ToUpper();
-    //    lName = lName.ToUpper();
 
-    //    var userQuery = "SELECT TOP 1 uniqueId FROM Users WHERE firstName = @0 AND lastName = @1 AND phoneNumber = @2";
-    //    // var userID = db.QuerySingle(userQuery, fName, lName, phone);
-    //    if (userID == null)
+    //    string userQuery = "INSERT INTO Users (firstName, lastName, phoneNumber) VALUES(@fName, @lName, @pNum)";
+    //    SqlCommand userCommand = new SqlCommand(userQuery, db);
+
+    //    userCommand.Parameters.AddWithValue("@fName", fName);
+    //    userCommand.Parameters.AddWithValue("@lName", lName);
+    //    userCommand.Parameters.AddWithValue("@pNum", phone);
+
+    //    string logQuery = "INSERT INTO CheckinLogs (dateLog, venueId, uniqueId) VALUES(@theDate, @venueId, @uniqueId)";
+    //    SqlCommand logCommand = new SqlCommand(logQuery, db);
+
+    //    logCommand.Parameters.AddWithValue("@theDate", DateTime.Now);
+    //    logCommand.Parameters.AddWithValue("@venueId", 1);
+    //    logCommand.Parameters.AddWithValue("@uniqueId", 11);
+
+    //    //string selectLastQuery = "SELECT TOP 1 uniqueId FROM Users ORDER BY uniqueId DESC";
+    //    //SqlCommand idCommand = new SqlCommand(selectLastQuery, connection);
+
+    //    try
     //    {
-    //        var addUserQuery = "INSERT INTO Users (firstName, lastName, phoneNumber) VALUES (@0, @1, @2)";
+    //        db.Open();
+    //        userCommand.ExecuteNonQuery();
+    //        logCommand.ExecuteNonQuery();
+    //        Console.WriteLine("Records Inserted Successfully");
     //    }
+    //    catch (SqlException e)
+    //    {
+    //        Console.WriteLine("Error Generated. Details: " + e.ToString());
+    //    }
+    //    finally
+    //    {
+    //        db.Close();
+    //    }
+
+    //    System.Diagnostics.Debug.WriteLine(fName + ",   " + lName + ",   " + phone);
     //}
-
-    System.Diagnostics.Debug.WriteLine(fName + ",   " + lName + ",   " + phone);
-
 }
 
 <header>
@@ -72,15 +125,15 @@
                                 <form method="post" action="">
                                     <h5 class="card-title">Don't have a username? Check-in manually</h5>
                                     <div class="form-group">
-                                        <input type="text" class="form-control" name="firstName" placeholder="Given name..." required>
+                                        <input type="text" class="form-control" name="firstName" maxlength="100" placeholder="Given name..." required>
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="text" class="form-control" name="lastName" placeholder="Surname..." required>
+                                        <input type="text" class="form-control" name="lastName" maxlength="100" placeholder="Surname..." required>
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="tel" class="form-control" name="contact" placeholder="Contact number..." required>
+                                        <input type="tel" class="form-control" name="contact" pattern="0[0-9]{9}||[0-9]{9} placeholder="Contact number..." required>
                                     </div>
 
                                     <div class="form-group">
