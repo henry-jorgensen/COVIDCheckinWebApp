@@ -61,6 +61,47 @@
         // Close database connection.
         db.Close();
     }
+
+
+    ////HENRYS CODE, WILL CONNECT WITH ABOVE
+    //if (Request.Method == "POST")
+    //{
+
+    //    string userQuery = "INSERT INTO Users (firstName, lastName, phoneNumber) VALUES(@fName, @lName, @pNum)";
+    //    SqlCommand userCommand = new SqlCommand(userQuery, db);
+
+    //    userCommand.Parameters.AddWithValue("@fName", fName);
+    //    userCommand.Parameters.AddWithValue("@lName", lName);
+    //    userCommand.Parameters.AddWithValue("@pNum", phone);
+
+    //    string logQuery = "INSERT INTO CheckinLogs (dateLog, venueId, uniqueId) VALUES(@theDate, @venueId, @uniqueId)";
+    //    SqlCommand logCommand = new SqlCommand(logQuery, db);
+
+    //    logCommand.Parameters.AddWithValue("@theDate", DateTime.Now);
+    //    logCommand.Parameters.AddWithValue("@venueId", 1);
+    //    logCommand.Parameters.AddWithValue("@uniqueId", 11);
+
+    //    //string selectLastQuery = "SELECT TOP 1 uniqueId FROM Users ORDER BY uniqueId DESC";
+    //    //SqlCommand idCommand = new SqlCommand(selectLastQuery, connection);
+
+    //    try
+    //    {
+    //        db.Open();
+    //        userCommand.ExecuteNonQuery();
+    //        logCommand.ExecuteNonQuery();
+    //        Console.WriteLine("Records Inserted Successfully");
+    //    }
+    //    catch (SqlException e)
+    //    {
+    //        Console.WriteLine("Error Generated. Details: " + e.ToString());
+    //    }
+    //    finally
+    //    {
+    //        db.Close();
+    //    }
+
+    //    System.Diagnostics.Debug.WriteLine(fName + ",   " + lName + ",   " + phone);
+    //}
 }
 
 <header>
@@ -96,26 +137,34 @@
 </header>
 
 <body>
+    
     <div class="col-4 m-4">
         <form method="get">
             <div class="row">
                 <label for="fName">First Name: </label>
-                <input type="text" name="fName" class="form-control" maxlength="100" required />
+                <input type="text" name="fName" class="form-control" maxlength="100" value="Paul" required />
             </div>
 
+            
             <div class="row mt-4">
                 <label for="lName">Last Name: </label>
-                <input type="text" name="lName" class="form-control" maxlength="100" required />
+                <input type="text" name="lName" class="form-control" maxlength="100" value="Smith" required />
             </div>
 
+            
             <div class="row mt-4">
                 <label for="phoneNum">Mobile Number: </label>
-                <input type="tel" name="phoneNum" class="form-control" pattern="0[0-9]{9}||[0-9]{9}" placeholder="012345678" required />
+                <input type="tel" name="phoneNum" class="form-control" pattern="0[0-9]{9}||[0-9]{9}" placeholder="012345678" value="0421321321" required />
             </div>
 
-            <div class="row mt-4">
-                <button type="submit" class="btn btn-primary">Check in</button>
-            </div>
-        </form>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary">Check-in</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </main>
     </div>
 </body>
