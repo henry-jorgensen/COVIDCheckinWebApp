@@ -1,0 +1,80 @@
+﻿@page
+
+<style>
+    body, html {
+        height: 100%;
+        background-color: #64afd5;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    .accessible-input {
+        padding: 30px 30px 30px 20px;
+        border-radius: 15px;
+        border: none;
+    }
+
+    .accessible-input-dark {
+        padding: 30px 30px 30px 20px;
+        border-radius: 15px;
+        border: none;
+        background-color: #1d2035;
+        color: #fff;
+    }
+
+    .accessible-input-dark:focus {
+        background-color: #1d2035;
+        color: #fff;
+    }
+
+    .accessible-input-dark::placeholder {
+        color: #fff;
+    }
+</style>
+
+<div class="container h-100">
+    <div class="row align-items-center justify-content-center h-100">
+        <div class="col-10">
+
+            <form method="post">
+                <div class="jumbotron justify-content-center" style="background-color: #64afd5 ">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col text-center">
+                            <h1 style="font-size:45pt"><b>COVID SAFE <p style="display:inline; color:white">CHECK-IN</p></b></h1>
+                        </div>
+                    </div><br />
+
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-sm-6 p10" style="background-color: #ffffff; padding: 40px; border-radius: 15px 0px 0px 15px ">
+                            <h5 class="card-title" style="color:black">Check in using your Unique Identifier</h5><br /><br />
+                            <div class="form-group">
+                                <input type="text" class="form-control accessible-input-dark" name="firstName" maxlength="100" placeholder="Unique identifier..." required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6" style="background-color: #1d2035; padding: 40px; border-radius: 0px 15px 15px 0px">
+                            <h5 class="card-title" style="color:white">Don't have a username? Check-in manually</h5><br />
+                            <div class="form-group">
+                                <input type="text" class="form-control accessible-input" name="firstName" maxlength="100" placeholder="Given name..." required>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" class="form-control accessible-input" name="lastName" maxlength="100" placeholder="Surname..." required>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="tel" class="form-control accessible-input" name="contact" pattern="0[0-9]{9}||[0-9]{9}" placeholder="Contact number..." required>
+                            </div>
+                        </div>
+                    </div><br />
+
+                    <div class="row d-flex justify-content-center">
+                        <div class="col" id="id-of-the-button" style="cursor: pointer; background-color: #ec194d; padding: 30px 10px 18px 10px; border-radius: 15px" onClick="javascript:this.form.submit();">
+                            <h5 class="card-title text-center align-items-center" style="color:white"><b>CHECK-IN</b></h5>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>$('#id-of-the-button').click(function () { document.forms[0].submit() });</script>
