@@ -40,9 +40,6 @@
         businessOwner = businessOwner.ToUpper();
         businessAddress = businessAddress.ToUpper();
 
-
-
-
         SqlCommand checkExisting = new SqlCommand("SELECT venueId FROM Venue WHERE venueName = @0 AND venueAddress = @1", db);
         checkExisting.Parameters.AddWithValue("@0", businessName);
         checkExisting.Parameters.AddWithValue("@1", businessAddress);
@@ -75,6 +72,7 @@
             venueIdString = venueId.ToString();
         }
 
+        db.Close();
         Response.Cookies.Append("venueId", venueIdString);
     }
 }
