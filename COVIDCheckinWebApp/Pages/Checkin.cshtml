@@ -41,11 +41,11 @@
         SqlCommand logCommand = new SqlCommand(logQuery, connection);
 
         logCommand.Parameters.AddWithValue("@theDate", DateTime.Now);
-        logCommand.Parameters.AddWithValue("@venueId", Request.Cookies["venueId"]);
-        logCommand.Parameters.AddWithValue("@uniqueId", 9);
+        logCommand.Parameters.AddWithValue("@venueId", 1);
+        logCommand.Parameters.AddWithValue("@uniqueId", 10);
 
-        string selectLastQuery = "SELECT TOP 1 uniqueId FROM Users ORDER BY uniqueId DESC";
-        SqlCommand idCommand = new SqlCommand(selectLastQuery, connection);
+        //string selectLastQuery = "SELECT TOP 1 uniqueId FROM Users ORDER BY uniqueId DESC";
+        //SqlCommand idCommand = new SqlCommand(selectLastQuery, connection);
 
         try
         {
