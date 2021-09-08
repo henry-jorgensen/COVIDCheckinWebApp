@@ -10,73 +10,79 @@
     SqlConnection db = new SqlConnection(connectionString);
 
     // Getting form values from page.
-    string fName = Request.Query["fName"];
-    string lName = Request.Query["lName"];
-    string phone = Request.Query["phoneNum"];
+
 
     // Checking if user is already in database, adding if not.
-    if (!String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(phone))
+
+
+
+    //HENRYS CODE, WILL CONNECT WITH ABOVE
+    if (Request.Method == "POST")
     {
-        fName = fName.ToUpper();
-        lName = lName.ToUpper();
 
-        SqlCommand userIDCheck = new SqlCommand("SELECT * FROM Users WHERE firstName = @firstName AND lastName = @lastName AND phoneNumber = @phoneNum", db);
+        string fName = Request.Form["firstName"];
+        string lName = Request.Form["lastName"];
+        string phone = Request.Form["contact"];
 
-        userIDCheck.Parameters.AddWithValue("@firstName", fName);
-        userIDCheck.Parameters.AddWithValue("@lastName", lName);
-        userIDCheck.Parameters.AddWithValue("@phoneNum", phone);
 
-        db.Open();
-        var userIDResult = userIDCheck.ExecuteScalar();
 
-        System.Diagnostics.Debug.WriteLine(userIDResult);
-
-        if (userIDResult == null)
+        if (!String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(phone))
         {
-            System.Diagnostics.Debug.WriteLine("It was null, big sad.");
+            fName = fName.ToUpper();
+            lName = lName.ToUpper();
+
+            SqlCommand userIDCheck = new SqlCommand("SELECT * FROM Users WHERE firstName = @firstName AND lastName = @lastName AND phoneNumber = @phoneNum", db);
+
+            userIDCheck.Parameters.AddWithValue("@firstName", fName);
+            userIDCheck.Parameters.AddWithValue("@lastName", lName);
+            userIDCheck.Parameters.AddWithValue("@phoneNum", phone);
+
+            db.Open();
+            var userIDResult = userIDCheck.ExecuteScalar();
+
+            System.Diagnostics.Debug.WriteLine(userIDResult);
+
+            if (userIDResult == null)
+            {
+                string userQuery = "INSERT INTO Users (firstName, lastName, phoneNumber) VALUES(@fName, @lName, @pNum)";
+                SqlCommand userCommand = new SqlCommand(userQuery, db);
+
+                userCommand.Parameters.AddWithValue("@fName", fName);
+                userCommand.Parameters.AddWithValue("@lName", lName);
+                userCommand.Parameters.AddWithValue("@pNum", phone);
+
+                userCommand.ExecuteNonQuery();
+
+                string selectLastQuery = "SELECT TOP 1 uniqueId FROM Users ORDER BY uniqueId DESC";
+                SqlCommand idCommand = new SqlCommand(selectLastQuery, db);
+
+                var newUserid = idCommand.ExecuteScalar();
+
+                string logQuery = "INSERT INTO CheckinLogs (dateLog, venueId, uniqueId) VALUES(@theDate, @venueId, @uniqueId)";
+                SqlCommand logCommand = new SqlCommand(logQuery, db);
+
+                logCommand.Parameters.AddWithValue("@theDate", DateTime.Now);
+                logCommand.Parameters.AddWithValue("@venueId", 1);
+                logCommand.Parameters.AddWithValue("@uniqueId", newUserid);
+                logCommand.ExecuteNonQuery();
+                db.Close();
+            }
+            else
+            {
+                string logQuery = "INSERT INTO CheckinLogs (dateLog, venueId, uniqueId) VALUES(@theDate, @venueId, @uniqueId)";
+                SqlCommand logCommand = new SqlCommand(logQuery, db);
+
+                logCommand.Parameters.AddWithValue("@theDate", DateTime.Now);
+                logCommand.Parameters.AddWithValue("@venueId", 1);
+                logCommand.Parameters.AddWithValue("@uniqueId", userIDResult);
+                logCommand.ExecuteNonQuery();
+                db.Close();
+            }
+
         }
+
+        System.Diagnostics.Debug.WriteLine(fName + ",   " + lName + ",   " + phone);
     }
-
-
-    ////HENRYS CODE, WILL CONNECT WITH ABOVE
-    //if (Request.Method == "POST")
-    //{
-
-    //    string userQuery = "INSERT INTO Users (firstName, lastName, phoneNumber) VALUES(@fName, @lName, @pNum)";
-    //    SqlCommand userCommand = new SqlCommand(userQuery, db);
-
-    //    userCommand.Parameters.AddWithValue("@fName", fName);
-    //    userCommand.Parameters.AddWithValue("@lName", lName);
-    //    userCommand.Parameters.AddWithValue("@pNum", phone);
-
-    //    string logQuery = "INSERT INTO CheckinLogs (dateLog, venueId, uniqueId) VALUES(@theDate, @venueId, @uniqueId)";
-    //    SqlCommand logCommand = new SqlCommand(logQuery, db);
-
-    //    logCommand.Parameters.AddWithValue("@theDate", DateTime.Now);
-    //    logCommand.Parameters.AddWithValue("@venueId", 1);
-    //    logCommand.Parameters.AddWithValue("@uniqueId", 11);
-
-    //    //string selectLastQuery = "SELECT TOP 1 uniqueId FROM Users ORDER BY uniqueId DESC";
-    //    //SqlCommand idCommand = new SqlCommand(selectLastQuery, connection);
-
-    //    try
-    //    {
-    //        db.Open();
-    //        userCommand.ExecuteNonQuery();
-    //        logCommand.ExecuteNonQuery();
-    //        Console.WriteLine("Records Inserted Successfully");
-    //    }
-    //    catch (SqlException e)
-    //    {
-    //        Console.WriteLine("Error Generated. Details: " + e.ToString());
-    //    }
-    //    finally
-    //    {
-    //        db.Close();
-    //    }
-
-    //    System.Diagnostics.Debug.WriteLine(fName + ",   " + lName + ",   " + phone);
-    //}
 }
 
 <header>
@@ -133,7 +139,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="tel" class="form-control" name="contact" pattern="0[0-9]{9}||[0-9]{9} placeholder="Contact number..." required>
+                                    <input type="tel" class="form-control" name="contact" pattern="0[0-9]{9}||[0-9]{9}" placeholder="Contact number..." required>
                                 </div>
 
                                 <div class="form-group">
