@@ -9,14 +9,7 @@
     String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
     SqlConnection db = new SqlConnection(connectionString);
 
-    // Getting form values from page.
-
-
-    // Checking if user is already in database, adding if not.
-
-
-
-    //HENRYS CODE, WILL CONNECT WITH ABOVE
+    // Form check.
     if (Request.Method == "POST")
     {
 
@@ -24,64 +17,65 @@
         string lName = Request.Form["lastName"];
         string phone = Request.Form["contact"];
 
-
-
         if (!String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(phone))
         {
+            // Convert names to upper.
             fName = fName.ToUpper();
             lName = lName.ToUpper();
 
-            SqlCommand userIDCheck = new SqlCommand("SELECT * FROM Users WHERE firstName = @firstName AND lastName = @lastName AND phoneNumber = @phoneNum", db);
+            // Query to check for database entry matching User inputs.
+            SqlCommand userIDCheck = new SqlCommand("SELECT uniqueId FROM Users WHERE firstName = @firstName AND lastName = @lastName AND phoneNumber = @phoneNum", db);
 
+            // Query parameters.
             userIDCheck.Parameters.AddWithValue("@firstName", fName);
             userIDCheck.Parameters.AddWithValue("@lastName", lName);
             userIDCheck.Parameters.AddWithValue("@phoneNum", phone);
 
+            // Open connection
             db.Open();
-            var userIDResult = userIDCheck.ExecuteScalar();
 
-            System.Diagnostics.Debug.WriteLine(userIDResult);
+            // Store query result.
+            var userIDResult = userIDCheck.ExecuteScalar();
 
             if (userIDResult == null)
             {
-                string userQuery = "INSERT INTO Users (firstName, lastName, phoneNumber) VALUES(@fName, @lName, @pNum)";
-                SqlCommand userCommand = new SqlCommand(userQuery, db);
+                // Query to add new User to database.
+                SqlCommand addNewUser = new SqlCommand("INSERT INTO Users (firstName, lastName, phoneNumber) VALUES (@fName, @lName, @pNum)", db);
 
-                userCommand.Parameters.AddWithValue("@fName", fName);
-                userCommand.Parameters.AddWithValue("@lName", lName);
-                userCommand.Parameters.AddWithValue("@pNum", phone);
+                // Query parameters.
+                addNewUser.Parameters.AddWithValue("@fName", fName);
+                addNewUser.Parameters.AddWithValue("@lName", lName);
+                addNewUser.Parameters.AddWithValue("@pNum", phone);
 
-                userCommand.ExecuteNonQuery();
+                // Executing query.
+                addNewUser.ExecuteNonQuery();
 
-                string selectLastQuery = "SELECT TOP 1 uniqueId FROM Users ORDER BY uniqueId DESC";
-                SqlCommand idCommand = new SqlCommand(selectLastQuery, db);
+                // Selecting newly added Users uniqueId.
+                SqlCommand idCommand = new SqlCommand("SELECT uniqueId FROM Users WHERE firstName = @firstName AND lastName = @lastName AND phoneNumber = @phoneNum", db);
 
-                var newUserid = idCommand.ExecuteScalar();
+                idCommand.Parameters.AddWithValue("@fName", fName);
+                idCommand.Parameters.AddWithValue("@lName", lName);
+                idCommand.Parameters.AddWithValue("@pNum", phone);
 
-                string logQuery = "INSERT INTO CheckinLogs (dateLog, venueId, uniqueId) VALUES(@theDate, @venueId, @uniqueId)";
-                SqlCommand logCommand = new SqlCommand(logQuery, db);
-
-                logCommand.Parameters.AddWithValue("@theDate", DateTime.Now);
-                logCommand.Parameters.AddWithValue("@venueId", 1);
-                logCommand.Parameters.AddWithValue("@uniqueId", newUserid);
-                logCommand.ExecuteNonQuery();
-                db.Close();
-            }
-            else
-            {
-                string logQuery = "INSERT INTO CheckinLogs (dateLog, venueId, uniqueId) VALUES(@theDate, @venueId, @uniqueId)";
-                SqlCommand logCommand = new SqlCommand(logQuery, db);
-
-                logCommand.Parameters.AddWithValue("@theDate", DateTime.Now);
-                logCommand.Parameters.AddWithValue("@venueId", 1);
-                logCommand.Parameters.AddWithValue("@uniqueId", userIDResult);
-                logCommand.ExecuteNonQuery();
-                db.Close();
+                // Setting userIDResult to newly created Users uniqueId.
+                userIDResult = idCommand.ExecuteScalar();
             }
 
+            // Log checkin query.
+            string logQuery = "INSERT INTO CheckinLogs (dateLog, venueId, uniqueId) VALUES(@theDate, @venueId, @uniqueId)";
+            SqlCommand logCommand = new SqlCommand(logQuery, db);
+
+            // Query parameters.
+            logCommand.Parameters.AddWithValue("@theDate", DateTime.Now);
+            logCommand.Parameters.AddWithValue("@venueId", 1);
+            logCommand.Parameters.AddWithValue("@uniqueId", userIDResult);
+
+            // Executing query.
+            logCommand.ExecuteNonQuery();
+
+            // Close connection.
+            db.Close();
         }
-
-        System.Diagnostics.Debug.WriteLine(fName + ",   " + lName + ",   " + phone);
     }
 }
 
