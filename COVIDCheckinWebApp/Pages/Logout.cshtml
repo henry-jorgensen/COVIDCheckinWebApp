@@ -1,8 +1,9 @@
 ﻿@page
 @{
+    //Sacrificial title so we don't get exceptions
     ViewData["Title"] = "Logout";
 
+    //Clear cookies and redirect
     Response.Cookies.Delete("venueId");
-
     Response.Redirect("Index");
 }

@@ -1,5 +1,6 @@
 ﻿@page
 @{
+    Layout = "_Layout";
     ViewData["Title"] = "Reports";
 
     if (Request.Cookies["venueId"] == null)
@@ -8,46 +9,3 @@
         Response.Redirect("Register");
     }
 }
-
-<header>
-    <nav class="navbar navbar-dark bg-primary navbar-expand-lg">
-        <a class="navbar-brand" href="#">
-            <img src="https://getbootstrap.com/docs/4.1/assets/brand/bootstrap-solid.svg" width="30" height="30" class="d-inline-block align-top" alt="">
-            Venue Management
-        </a>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="login">Login <span class="sr-only">(current)</span></a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="register">Register <span class="sr-only">(current)</span></a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="checkin">Checkin <span class="sr-only">(current)</span></a>
-                </li>
-
-                <li class="nav-item active">
-                    <a class="nav-link" href="reports">Reports <span class="sr-only">(current)</span></a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="logout">Logout <span class="sr-only">(current)</span></a>
-                </li>
-            </ul>
-
-            <span class="navbar-text">
-                @if (Request.Cookies["venueId"] != null)
-                {
-                    <div>venueID: @Request.Cookies["venueId"]</div>
-                }
-            </span>
-        </div>
-    </nav>
-</header>

@@ -8,39 +8,43 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-    <!--
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">COVIDCheckinWebApp</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
+        <nav class="navbar navbar-dark bg-primary navbar-expand-lg">
+            <a class="navbar-brand" href="#">
+                <img src="https://getbootstrap.com/docs/4.1/assets/brand/bootstrap-solid.svg" width="30" height="30" class="d-inline-block align-top" alt="">
+                Venue Management
+            </a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item @(ViewData["Title"].ToString()=="Home" ? "active" : "")">
+                        <a class="nav-link" href="index">Home <span class="sr-only">(current)</span></a>
+                    </li>
+
+                    <li class="nav-item @(ViewData["Title"].ToString()=="Login" ? "active" : "")">
+                        <a class="nav-link" href="login">Login <span class="sr-only">(current)</span></a>
+                    </li>
+
+                    <li class="nav-item @(ViewData["Title"].ToString()=="Register" ? "active" : "")">
+                        <a class="nav-link" href="register">Register <span class="sr-only">(current)</span></a>
+                    </li>
+
+                    <li class="nav-item @(ViewData["Title"].ToString()=="Checkin" ? "active" : "")">
+                        <a class="nav-link" href="checkin">Checkin <span class="sr-only">(current)</span></a>
+                    </li>
+
+                    <li class="nav-item @(ViewData["Title"].ToString()=="Reports" ? "active" : "")">
+                        <a class="nav-link" href="reports">Reports <span class="sr-only">(current)</span></a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="logout">Logout <span class="sr-only">(current)</span></a>
+                    </li>
+                </ul>
             </div>
         </nav>
     </header>
-    -->
-    
-   @RenderBody()
 
-    <!--
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2021 - COVIDCheckinWebApp - <a asp-area="" asp-page="/Privacy">Privacy</a>
-        </div>
-    </footer>
-    -->
+    @RenderBody()   
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
