@@ -22,6 +22,7 @@
         string fName = Request.Form["firstName"];
         string lName = Request.Form["lastName"];
         string phone = Request.Form["contact"];
+        string uniqueId = (lName.Substring(0,2) + fName.Substring(0, 2)).ToUpper();
 
         if (!String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(phone))
         {
@@ -45,13 +46,22 @@
 
             if (userIDResult == null)
             {
+                //Querying count of possible uniqueIds in database
+                SqlCommand checkingUniqueIds = new SqlCommand("SELECT COUNT(*) FROM Users WHERE uniqueId = @uniqueId");
+
+                //Query parameters
+                checkingUniqueIds.Parameters.AddWithValue("@uniqueId", uniqueId);
+
+                checkingUniqueIds.ExecuteScalar();
+
                 // Query to add new User to database.
-                SqlCommand addNewUser = new SqlCommand("INSERT INTO Users (firstName, lastName, phoneNumber) VALUES (@fName, @lName, @pNum)", db);
+                SqlCommand addNewUser = new SqlCommand("INSERT INTO Users (firstName, lastName, phoneNumber, uniqueId) VALUES (@fName, @lName, @pNum, @uniqueId)", db);
 
                 // Query parameters.
                 addNewUser.Parameters.AddWithValue("@fName", fName);
                 addNewUser.Parameters.AddWithValue("@lName", lName);
                 addNewUser.Parameters.AddWithValue("@pNum", phone);
+                addNewUser.Parameters.AddWithValue("@uniqueId", uniqueId);
 
                 // Executing query.
                 addNewUser.ExecuteNonQuery();
