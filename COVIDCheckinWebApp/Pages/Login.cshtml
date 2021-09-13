@@ -1,15 +1,73 @@
-﻿@page
+@page
+@using System.Text;
+@using System.Data.SqlClient;
+@using System.Security.Cryptography;
 @{
+<<<<<<< HEAD
     Layout = "_Layout";
     ViewData["Title"] = "Login";
 
+=======
+>>>>>>> LoginSystem
     if (Request.Cookies["venueId"] != null)
     {
         //Redirect to index if we are logged in
         Response.Redirect("Index");
     }
+
+<<<<<<< HEAD
+=======
+    ViewData["Title"] = "Login";
+
+    String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
+    SqlConnection db = new SqlConnection(connectionString);
+
+    var email = "";
+    var password = "";
+
+    if (Request.Method == "POST")
+    {
+        email = Request.Form["email"];
+        password = Request.Form["password"];
+
+        if (!String.IsNullOrWhiteSpace(email) && !String.IsNullOrWhiteSpace(email))
+        {
+            email = email.ToUpper();
+            password = Encrypt(Request.Form["password"]);
+
+            SqlCommand CHECKLOGIN = new SqlCommand("SELECT venueId FROM Venue WHERE ownerEmail = @0 AND ownerPassword = @1", db);
+            CHECKLOGIN.Parameters.AddWithValue("@0", email);
+            CHECKLOGIN.Parameters.AddWithValue("@1", password);
+
+            db.Open();
+            var venueIdString = CHECKLOGIN.ExecuteScalar();
+
+            //Store venueID in cookies to signify we are logged in
+            Response.Cookies.Append("venueId", venueIdString.ToString());
+
+            //Redirect back to Index when successfully registered
+            Response.Redirect("Index");
+        }
+    }
+
+    static string Encrypt(string data)
+    {
+        using (SHA256 hash = SHA256.Create())
+        {
+            byte[] bytes = hash.ComputeHash(Encoding.UTF8.GetBytes(data));
+
+            StringBuilder builder = new StringBuilder();
+
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                builder.Append(bytes[i].ToString("x2"));
+            }
+            return builder.ToString();
+        }
+    }
 }
 
+>>>>>>> LoginSystem
 <div class="container">
     <main role="main" class="pb-3">
         <br /><br /><br />
