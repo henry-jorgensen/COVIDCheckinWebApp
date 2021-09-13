@@ -3,20 +3,15 @@
 @using System.Data.SqlClient;
 @using System.Security.Cryptography;
 @{
-<<<<<<< HEAD
     Layout = "_Layout";
     ViewData["Title"] = "Login";
 
-=======
->>>>>>> LoginSystem
     if (Request.Cookies["venueId"] != null)
     {
         //Redirect to index if we are logged in
         Response.Redirect("Index");
     }
 
-<<<<<<< HEAD
-=======
     ViewData["Title"] = "Login";
 
     String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
@@ -42,11 +37,14 @@
             db.Open();
             var venueIdString = CHECKLOGIN.ExecuteScalar();
 
-            //Store venueID in cookies to signify we are logged in
-            Response.Cookies.Append("venueId", venueIdString.ToString());
+            if (venueIdString != null)
+            {
+                //Store venueID in cookies to signify we are logged in
+                Response.Cookies.Append("venueId", venueIdString.ToString());
 
-            //Redirect back to Index when successfully registered
-            Response.Redirect("Index");
+                //Redirect back to Index when successfully registered
+                Response.Redirect("Index");
+            }
         }
     }
 
@@ -67,7 +65,6 @@
     }
 }
 
->>>>>>> LoginSystem
 <div class="container">
     <main role="main" class="pb-3">
         <br /><br /><br />
