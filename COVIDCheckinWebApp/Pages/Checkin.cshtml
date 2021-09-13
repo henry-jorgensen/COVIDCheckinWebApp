@@ -179,15 +179,26 @@
 </body>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
 <script>
-    $('#manualForm').on('submit', function (e) {
-        var formId = this.id,
-            form = this;
+    $("#manualForm").submit(function (e) {
+
         e.preventDefault();
 
-        $('#manualSuccessful').modal('show');
-        setTimeout(function () {
-            form.submit();
-        }, 5000);
+        var form = $(this);
+        var url = form.attr('action');
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(),
+            success: function () {
+                $("#manualForm").trigger('reset'); // Clears form contents
+                $('#manualSuccessful').modal('show');
+                setTimeout(function () {
+                    $('#manualSuccessful').modal('hide');
+                }, 5000);
+            }
+        });
     });
 </script>
