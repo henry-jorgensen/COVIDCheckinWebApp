@@ -1,15 +1,22 @@
 ﻿@page
 @using System.Web;
 @using System.Linq;
+@using System.Text;
 @using System.Data.SqlClient;
 @using System.Configuration;
+@using System.Security.Cryptography;
 
 @{
     ViewData["Title"] = "Registration";
 
+    if (Request.Cookies["venueId"] != null)
+    {
+        //Redirect to index if we are logged in
+        Response.Redirect("Index");
+    }
+
     String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
     SqlConnection db = new SqlConnection(connectionString);
-
 
     var email = "";
     var phone = "";
@@ -20,16 +27,11 @@
     var businessNumber = "";
     var venueIdString = "";
 
-    if (Request.Cookies["email"]!=null && Request.Cookies["email"] != null)
-    {
-        Response.Redirect("Index");
-    }
-
     if (Request.Method == "POST")
     {
         email = Request.Form["email"];
         phone = Request.Form["phone"];
-        password = Request.Form["password"];
+        password = Encrypt(Request.Form["password"]);
         businessName = Request.Form["businessname"];
         businessOwner = Request.Form["businessowner"];
         businessAddress = Request.Form["businessaddress"];
@@ -73,7 +75,28 @@
         }
 
         db.Close();
+
+        //Store venueID in cookies to signify we are logged in
         Response.Cookies.Append("venueId", venueIdString);
+
+        //Redirect back to Index when successfully registered
+        Response.Redirect("Index");
+    }
+
+    static string Encrypt(string data)
+    {
+        using (SHA256 hash = SHA256.Create())
+        {
+            byte[] bytes = hash.ComputeHash(Encoding.UTF8.GetBytes(data));
+
+            StringBuilder builder = new StringBuilder();
+
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                builder.Append(bytes[i].ToString("x2"));
+            }
+            return builder.ToString();
+        }
     }
 }
 
@@ -167,19 +190,10 @@
                     </div>
 
                     @{
-                        if (Request.Method == "POST")
-                        {
-                            Response.Cookies.Append("email", Request.Form["email"]);
-                            Response.Cookies.Append("phone", Request.Form["phone"]);
-                            Response.Cookies.Append("password", Request.Form["password"]);
-                            Response.Cookies.Append("password2", Request.Form["password2"]);
-                            Response.Cookies.Append("bname", Request.Form["businessname"]);
-                            Response.Cookies.Append("bowner", Request.Form["businessowner"]);
-                            Response.Cookies.Append("baddress", Request.Form["businessaddress"]);
-                            Response.Cookies.Append("bnumber", Request.Form["businessnumber"]);
-
-                            Response.Redirect("Index");
-                        }
+                                                if (Request.Method == "POST")
+                                                {
+                                                    
+                                                }
                     }
                 </form>
             </div>
@@ -187,8 +201,7 @@
     </main>
 </div>
 
-<script language='javascript' type='text/javascript'>
-    function matchPassword(password) {
+<script language='javascript' type='text/javascript'>function matchPassword(password) {
         if (password.value != document.getElementById('password').value) {
             password.setCustomValidity('Passwords must match.');
         } else {
@@ -200,7 +213,4 @@
         new google.maps.places.Autocomplete(input);
     }
 
-    google.maps.event.addDomListener(window, 'load', initialize);
-
-
-</script>
+    google.maps.event.addDomListener(window, 'load', initialize);</script>

@@ -1,7 +1,10 @@
 ﻿@page
-@using System;
-@using System.Configuration;
+@using System.Web;
+@using System.Linq;
+@using System.Text;
 @using System.Data.SqlClient;
+@using System.Configuration;
+@using System.Security.Cryptography;
 @{
     ViewData["Title"] = "Index";
 
@@ -45,7 +48,7 @@
 <div class="container">
     <main role="main" class="pb-3">
         <br /><br /><br />
-        @{ 
+        @{
             if (Request.Cookies["email"] != null && Request.Cookies["email"] != null)
             {
                 <div class="row d-flex justify-content-center">
@@ -54,12 +57,8 @@
                             <div class="card-body">
                                 <h5 class="card-title">Your details</h5>
 
-                                Email: @Request.Cookies["email"]<br />
-                                Phone: @Request.Cookies["phone"]<br />
-                                Business name: @Request.Cookies["bname"]<br />
-                                Business owner: @Request.Cookies["bowner"]<br />
-                                Business address: @Request.Cookies["baddress"]<br />
-                                Business number: @Request.Cookies["bnumber"]<br />
+                                Venue ID: @Request.Cookies["venueId"]<br />
+                                Please pull other details from DB
                             </div>
                         </div>
                     </div>
