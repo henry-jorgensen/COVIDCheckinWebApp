@@ -62,10 +62,10 @@
             if (uniqueIDResult == null)
             {
                 //Querying count of possible uniqueIds in database  //NEED FIX FOR LIKE
-                SqlCommand checkingUniqueIds = new SqlCommand("SELECT COUNT(*) AS userCount FROM Users WHERE uniqueId LIKE @uniqueId%", db);
+                SqlCommand checkingUniqueIds = new SqlCommand("SELECT COUNT(*) AS userCount FROM Users WHERE uniqueId LIKE @uniqueId", db);
 
                 //Query parameters
-                checkingUniqueIds.Parameters.AddWithValue("@uniqueId", uniqueId);
+                checkingUniqueIds.Parameters.AddWithValue("@uniqueId", uniqueId + "%");
 
                 var theCount = checkingUniqueIds.ExecuteScalar();
                 theCount = theCount.ToString();
