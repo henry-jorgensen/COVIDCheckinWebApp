@@ -17,6 +17,8 @@
     String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
     SqlConnection db = new SqlConnection(connectionString);
 
+    bool invalidPassword = false;
+
     var email = "";
     var password = "";
 
@@ -45,6 +47,14 @@
                 //Redirect back to Index when successfully registered
                 Response.Redirect("Index");
             }
+            else
+            {
+                invalidPassword = true;
+            }
+        }
+        else
+        {
+            invalidPassword = true;
         }
     }
 
@@ -76,11 +86,11 @@
                         <div class="card-body">
                             <h5 class="card-title">Login</h5>
                             <div class="form-group">
-                                <input type="email" class="form-control" name="email" placeholder="Email">
+                                <input type="email" class="form-control @(invalidPassword==true ? "is-invalid" : "")" name="email" placeholder="@(invalidPassword==true ? "Incorrect email or Password" : "Email")">
                             </div>
 
                             <div class="form-group">
-                                <input type="password" class="form-control" name="password" placeholder="Password">
+                                <input type="password" class="form-control @(invalidPassword==true ? "is-invalid" : "")" name="password" placeholder="@(invalidPassword==true ? "Incorrect email or Password" : "Password")">
                             </div>
 
                             <div class="form-group">
