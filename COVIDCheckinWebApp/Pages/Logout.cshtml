@@ -2,8 +2,7 @@
 @{
     ViewData["Title"] = "Logout";
 
-    Response.Cookies.Delete("email");
-    Response.Cookies.Delete("password");
+    Response.Cookies.Delete("venueId");
 
     Response.Redirect("Index");
 }

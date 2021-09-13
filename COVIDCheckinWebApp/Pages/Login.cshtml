@@ -2,8 +2,9 @@
 @{
     ViewData["Title"] = "Login";
 
-    if (Request.Cookies["email"] != null && Request.Cookies["email"] != null)
+    if (Request.Cookies["venueId"] != null)
     {
+        //Redirect to index if we are logged in
         Response.Redirect("Index");
     }
 }
@@ -35,6 +36,10 @@
                 <li class="nav-item disabled">
                     <a class="nav-link" href="reports">Reports <span class="sr-only">(current)</span></a>
                 </li>
+
+                <li class="nav-item disabled">
+                    <a class="nav-link" href="logout">Logout <span class="sr-only">(current)</span></a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -62,16 +67,6 @@
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary">Login</button>
                             </div>
-
-                            @{
-                                if (Request.Method == "POST")
-                                {
-                                    <p>
-                                        Email: @Request.Form["email"];<br />
-                                        Password: @Request.Form["password"];<br />
-                                    </p>
-                                }
-                            }
                         </div>
                     </div>
                 </div>
