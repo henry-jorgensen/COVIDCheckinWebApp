@@ -69,12 +69,11 @@
 
                 var theCount = checkingUniqueIds.ExecuteScalar();
                 theCount = theCount.ToString();
+
                 if (theCount != "0")
                 {
                     uniqueId = uniqueId + theCount.ToString();
                 }
-
-
 
                 // Query to add new User to database.
                 SqlCommand addNewUser = new SqlCommand("INSERT INTO Users (firstName, lastName, phoneNumber, uniqueId) VALUES (@fName, @lName, @pNum, @uniqueId)", db);
@@ -218,6 +217,10 @@
 
                 // Clears form contents
                 $("#manualForm").trigger('reset');
+                document.getElementById("firstname").disabled = false;
+                document.getElementById("lastname").disabled = false;
+                document.getElementById("contact").disabled = false;
+                document.getElementById("unique").disabled = false;
 
                 // Hides "manualSuccessful" modal after 5 seconds
                 setTimeout(function () {
