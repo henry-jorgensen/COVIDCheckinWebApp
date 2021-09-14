@@ -127,7 +127,15 @@
                 <div class="card-body">
                     <div class="row d-flex justify-content-center">
                         <div class="col-sm-6 border-right">
-                            <h5 class="card-title">Placeholder...</h5>
+                            <h5 class="card-title">Know your username? Check-in faster!</h5>
+                            <form method="post" id="usernameForm" action="">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="username" maxlength="100" placeholder="Username..." required>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" id="usernameSubmit" class="btn btn-primary">Check-in</button>
+                                </div>
+                            </form>
                         </div>
                         <div class="col-sm-6">
                             <form method="post" id="manualForm" action="">
@@ -146,9 +154,6 @@
 
                                 <div class="form-group">
                                     <button type="submit" id="manualSubmit" class="btn btn-primary" onsubmit="">Check-in</button>
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#manualSuccessful">
-                                        Test modal
-                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -181,20 +186,32 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 <script>
+    // To be initiated on submit of "manualForm" 
     $("#manualForm").submit(function (e) {
 
+        // Prevents normal submit of form
         e.preventDefault();
 
+        // Grabs form data and URL for AJAX Request
         var form = $(this);
         var url = form.attr('action');
 
+        // AJAX Request
         $.ajax({
             type: "POST",
             url: url,
             data: form.serialize(),
+
+            // To be done if AJAX Request is successful
             success: function () {
-                $("#manualForm").trigger('reset'); // Clears form contents
+
+                // Shows "manualSuccessful" modal
                 $('#manualSuccessful').modal('show');
+
+                // Clears form contents
+                $("#manualForm").trigger('reset');
+
+                // Hides "manualSuccessful" modal after 5 seconds
                 setTimeout(function () {
                     $('#manualSuccessful').modal('hide');
                 }, 5000);
