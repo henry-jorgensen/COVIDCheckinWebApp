@@ -32,20 +32,24 @@
             email = email.ToUpper();
             password = Encrypt(Request.Form["password"]);
 
-            SqlCommand CHECKLOGIN = new SqlCommand("SELECT venueId FROM Venue WHERE ownerEmail = @0 AND ownerPassword = @1", db);
+            SqlCommand CHECKLOGIN = new SqlCommand("SELECT venueId, venueName FROM Venue WHERE ownerEmail = @0 AND ownerPassword = @1", db);
             CHECKLOGIN.Parameters.AddWithValue("@0", email);
             CHECKLOGIN.Parameters.AddWithValue("@1", password);
 
             db.Open();
-            var venueIdString = CHECKLOGIN.ExecuteScalar();
+            SqlDataReader reader = CHECKLOGIN.ExecuteReader();
 
-            if (venueIdString != null)
+            if (reader.HasRows)
             {
-                //Store venueID in cookies to signify we are logged in
-                Response.Cookies.Append("venueId", venueIdString.ToString());
+                while (reader.Read())
+                {
+                    //Store venueID in cookies to signify we are logged in
+                    Response.Cookies.Append("venueId", reader.GetValue(0).ToString());
+                    Response.Cookies.Append("venueName", reader.GetString(1));
 
-                //Redirect back to Index when successfully registered
-                Response.Redirect("Index");
+                    //Redirect back to Index when successfully registered
+                    Response.Redirect("Index");
+                }
             }
             else
             {
