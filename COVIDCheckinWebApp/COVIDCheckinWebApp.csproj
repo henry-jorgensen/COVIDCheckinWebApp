@@ -16,4 +16,7 @@
   <ItemGroup>
     <Content Remove="Pages\Success.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Pages\QRTest.cshtml.cs" />
+  </ItemGroup>
 </Project>
