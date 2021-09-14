@@ -18,20 +18,21 @@
     // Form check.
     if (Request.Method == "POST")
     {
-
+        // Unique ID checkin.
         if (!string.IsNullOrWhiteSpace(Request.Form["username"]))
         {
-            System.Diagnostics.Debug.WriteLine("If statement working");
-
+            // Get form data.
             string uName = Request.Form["username"];
 
             db.Open();
 
+            // Check for uniqueId in database + store result.
             SqlCommand existingID = new SqlCommand("SELECT ID FROM Users WHERE uniqueId = @uName", db);
             existingID.Parameters.AddWithValue("@uName", uName);
 
             var existingIDResult = existingID.ExecuteScalar();
 
+            // If uniqueId exists, log a new checkin. Else, notify user of incorrect details.
             if (existingIDResult != null)
             {
                 SqlCommand newCheckin = new SqlCommand("INSERT INTO CheckinLogs (dateLog, venueId, uniqueId) VALUES (@dateLog, @venueId, @uniqueId)", db);
@@ -45,6 +46,7 @@
                 // Notify user of incorrect username.
             }
 
+            // Close connection + end script.
             db.Close();
             return;
         }
