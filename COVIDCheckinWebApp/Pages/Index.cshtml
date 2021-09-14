@@ -5,6 +5,43 @@
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Home";
+
+    var email = "";
+    var phone = "";
+    var password = "";
+    var businessName = "";
+    var businessOwner = "";
+    var businessAddress = "";
+    var businessNumber = "";
+    var venueIdString = "";
+
+    if (Request.Cookies["venueId"] != null)
+    {
+        venueIdString = Request.Cookies["venueId"];
+
+        String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
+        SqlConnection db = new SqlConnection(connectionString);
+
+        SqlCommand checkExisting = new SqlCommand("SELECT ownerEmail, ownerPhone, ownerPassword, venueName, venueOwner, venueAddress, venuePhone FROM Venue WHERE venueId = @0", db);
+        checkExisting.Parameters.AddWithValue("@0", venueIdString);
+
+        db.Open();
+        SqlDataReader reader = checkExisting.ExecuteReader();
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                email = reader.GetString(0);
+                phone = reader.GetString(1);
+                password = reader.GetString(2);
+                businessName = reader.GetString(3);
+                businessOwner = reader.GetString(4);
+                businessAddress = reader.GetString(5);
+                businessNumber = reader.GetString(6);
+            }
+        }
+    }
 }
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJG02FQOVVRvnAMzRdFvNo9QLLcBsNLIY&libraries=places&callback=initialize"></script>
@@ -33,11 +70,11 @@
                                 <div class="card-body">
                                     <h5 class="card-title">Update Account Details</h5>
                                     <div class="form-group">
-                                        <input type="email" class="form-control" name="email" placeholder="Email..." value="" required>
+                                        <input type="email" class="form-control" name="email" placeholder="Email..." value="@email" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="tel" class="form-control" name="phone" placeholder="Contact number..." pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
+                                        <input type="tel" class="form-control" name="phone" placeholder="Contact number..." value="@phone" pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
                                     </div>
 
                                     <div class="form-group">
@@ -83,19 +120,19 @@
                                 <div class="card-body">
                                     <h5 class="card-title">Update Venue Details</h5>
                                     <div class="form-group">
-                                        <input type="text" class="form-control" name="businessname" placeholder="Business name..." required>
+                                        <input type="text" class="form-control" name="businessname" placeholder="Business name..." value="@businessName" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="text" class="form-control" name="businessowner" placeholder="Business owner..." required>
+                                        <input type="text" class="form-control" name="businessowner" placeholder="Business owner..." value="@businessOwner" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="text" class="form-control" name="businessaddress" id="businessaddress" placeholder="Business address..." required>
+                                        <input type="text" class="form-control" name="businessaddress" id="businessaddress" placeholder="Business address..." value="@businessAddress" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="tel" class="form-control" name="businessnumber" placeholder="Business phone number..." pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
+                                        <input type="tel" class="form-control" name="businessnumber" placeholder="Business phone number..." value="@businessNumber" pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
                                     </div>
 
                                     <div class="form-group">
