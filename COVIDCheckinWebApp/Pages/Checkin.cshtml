@@ -30,7 +30,7 @@
             lName = lName.ToUpper();
 
             // Query to check for database entry matching User inputs.
-            SqlCommand userIDCheck = new SqlCommand("SELECT uniqueId FROM Users WHERE firstName = @fName AND lastName = @lName AND phoneNumber = @pNum", db);
+            SqlCommand userIDCheck = new SqlCommand("SELECT ID FROM Users WHERE firstName = @fName AND lastName = @lName AND phoneNumber = @pNum", db);
 
             // Query parameters.
             userIDCheck.Parameters.AddWithValue("@fName", fName);
@@ -57,7 +57,7 @@
                 addNewUser.ExecuteNonQuery();
 
                 // Selecting newly added Users uniqueId.
-                SqlCommand idCommand = new SqlCommand("SELECT uniqueId FROM Users WHERE firstName = @fName AND lastName = @lName AND phoneNumber = @pNum", db);
+                SqlCommand idCommand = new SqlCommand("SELECT ID FROM Users WHERE firstName = @fName AND lastName = @lName AND phoneNumber = @pNum", db);
 
                 idCommand.Parameters.AddWithValue("@fName", fName);
                 idCommand.Parameters.AddWithValue("@lName", lName);
