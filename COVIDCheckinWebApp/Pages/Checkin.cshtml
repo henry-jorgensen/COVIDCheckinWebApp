@@ -18,10 +18,42 @@
     // Form check.
     if (Request.Method == "POST")
     {
+
+        if (!string.IsNullOrWhiteSpace(Request.Form["username"]))
+        {
+            System.Diagnostics.Debug.WriteLine("If statement working");
+
+            string uName = Request.Form["username"];
+
+            db.Open();
+
+            SqlCommand existingID = new SqlCommand("SELECT ID FROM Users WHERE uniqueId = @uName", db);
+            existingID.Parameters.AddWithValue("@uName", uName);
+
+            var existingIDResult = existingID.ExecuteScalar();
+
+            if (existingIDResult != null)
+            {
+                SqlCommand newCheckin = new SqlCommand("INSERT INTO CheckinLogs (dateLog, venueId, uniqueId) VALUES (@dateLog, @venueId, @uniqueId)", db);
+                newCheckin.Parameters.AddWithValue("@dateLog", DateTime.Now);
+                newCheckin.Parameters.AddWithValue("@venueId", Request.Cookies["venueId"]);
+                newCheckin.Parameters.AddWithValue("@uniqueId", existingIDResult);
+                newCheckin.ExecuteNonQuery();
+            }
+            else
+            {
+                // Notify user of incorrect username.
+            }
+
+            db.Close();
+            return;
+        }
+
         var venueId = Request.Cookies["venueId"];
         string fName = Request.Form["firstName"];
         string lName = Request.Form["lastName"];
         string phone = Request.Form["contact"];
+        System.Diagnostics.Debug.WriteLine("Should not be here.");
 
         if (!String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(phone))
         {
