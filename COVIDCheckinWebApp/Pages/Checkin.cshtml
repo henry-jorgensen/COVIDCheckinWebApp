@@ -22,12 +22,12 @@
         string fName = Request.Form["firstName"];
         string lName = Request.Form["lastName"];
         string phone = Request.Form["contact"];
-        string uniqueId = (lName.Substring(0, 2) + fName.Substring(0, 2)).ToUpper();
 
-
-        Console.WriteLine(uniqueId);
         if (!String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(fName) && !String.IsNullOrWhiteSpace(phone))
         {
+            string uniqueId = (lName.Substring(0, 2) + fName.Substring(0, 2)).ToUpper();
+            Console.WriteLine(uniqueId);
+
             // Open connection
             db.Open();
 
@@ -69,12 +69,11 @@
 
                 var theCount = checkingUniqueIds.ExecuteScalar();
                 theCount = theCount.ToString();
+
                 if (theCount != "0")
                 {
                     uniqueId = uniqueId + theCount.ToString();
                 }
-
-
 
                 // Query to add new User to database.
                 SqlCommand addNewUser = new SqlCommand("INSERT INTO Users (firstName, lastName, phoneNumber, uniqueId) VALUES (@fName, @lName, @pNum, @uniqueId)", db);
@@ -127,29 +126,27 @@
                 <div class="card-body">
                     <div class="row d-flex justify-content-center">
                         <div class="col-sm-6 border-right">
-                            <h5 class="card-title">Know your username? Check-in faster!</h5>
-                            <form method="post" id="usernameForm" action="">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" name="username" maxlength="100" placeholder="Username..." required>
-                                </div>
-                                <div class="form-group">
-                                    <button type="submit" id="usernameSubmit" class="btn btn-primary">Check-in</button>
-                                </div>
-                            </form>
+                            <h5 class="card-title">Scan your QR code for a faster checkin</h5>
                         </div>
                         <div class="col-sm-6">
                             <form method="post" id="manualForm" action="">
-                                <h5 class="card-title">Don't have a username? Check-in manually</h5>
+                                <h5 class="card-title">Check in with your Unique Identifier:</h5>
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="firstName" maxlength="100" placeholder="Given name..." required>
+                                    <input type="text" class="form-control" name="username" id="unique" oninput="disableManual(this.value)" maxlength="100" placeholder="Unique ID..." required>
+                                </div>
+                                <hr />
+
+                                <h5 class="card-title">Check-in manually</h5>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="firstName" id="firstname" oninput="disableUnique(this.value)" maxlength="100" placeholder="First name..." required>
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="lastName" maxlength="100" placeholder="Surname..." required>
+                                    <input type="text" class="form-control" name="lastName" id="lastname" oninput="disableUnique(this.value)" maxlength="100" placeholder="Last name..." required>
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="tel" class="form-control" name="contact" pattern="0[0-9]{9}||[0-9]{9}" placeholder="Contact number..." required>
+                                    <input type="tel" class="form-control" name="contact" id="contact" oninput="disableUnique(this.value)" pattern="0[0-9]{9}||[0-9]{9}" placeholder="Phone number..." required>
                                 </div>
 
                                 <div class="form-group">
@@ -176,16 +173,26 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" fill="green" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
                     </svg>
-                    <p class="h3 justify-content-center">You have successfully checked into @Request.Cookies["bname"].</p>
+                    <p class="h3 justify-content-center">You have successfully checked into @Request.Cookies["venueName"].</p>
                 </div>
             </div>
         </div>
     </div>
+
 </body>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 <script>
+    function disableManual(value) {
+        document.getElementById("firstname").disabled = value != "";
+        document.getElementById("lastname").disabled = value != "";
+        document.getElementById("contact").disabled = value != "";
+    }
+    function disableUnique(value) {
+        document.getElementById("unique").disabled = value != "";
+    }
+
     // To be initiated on submit of "manualForm" 
     $("#manualForm").submit(function (e) {
 
@@ -210,6 +217,10 @@
 
                 // Clears form contents
                 $("#manualForm").trigger('reset');
+                document.getElementById("firstname").disabled = false;
+                document.getElementById("lastname").disabled = false;
+                document.getElementById("contact").disabled = false;
+                document.getElementById("unique").disabled = false;
 
                 // Hides "manualSuccessful" modal after 5 seconds
                 setTimeout(function () {

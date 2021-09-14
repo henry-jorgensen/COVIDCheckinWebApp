@@ -76,6 +76,7 @@
 
         //Store venueID in cookies to signify we are logged in
         Response.Cookies.Append("venueId", venueIdString);
+        Response.Cookies.Append("venueName", businessName);
 
         //Redirect back to Index when successfully registered
         Response.Redirect("Index");
