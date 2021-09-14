@@ -119,6 +119,39 @@
     }
 }
 
+<style>
+    #container {
+        text-align: center;
+        margin: 0;
+    }
+
+    #qr-canvas {
+        margin: auto;
+        width: calc(100% - 20px);
+        max-width: 400px;
+    }
+
+    #btn-scan-qr {
+        cursor: pointer;
+    }
+
+        #btn-scan-qr img {
+            height: 10em;
+            padding: 15px;
+            margin: 15px;
+            background: white;
+        }
+
+    #qr-result {
+        font-size: 1.2em;
+        margin: 20px auto;
+        padding: 20px;
+        max-width: 700px;
+        background-color: white;
+    }
+
+</style>
+
 <body>
     <div class="container">
         <main role="main" class="pb-3 align-self-center">
@@ -127,29 +160,38 @@
                 <div class="card-body">
                     <div class="row d-flex justify-content-center">
                         <div class="col-sm-6 border-right">
-                            <h5 class="card-title">Know your username? Check-in faster!</h5>
-                            <form method="post" id="usernameForm" action="">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" name="username" maxlength="100" placeholder="Username..." required>
-                                </div>
-                                <div class="form-group">
-                                    <button type="submit" id="usernameSubmit" class="btn btn-primary">Check-in</button>
-                                </div>
-                            </form>
+                            <h5 class="card-title">Scan your QR code for a faster checkin</h5>
+                            <h1>QR Code Scanner</h1>
+
+                            <a id="btn-scan-qr">
+                            <img src="https://dab1nmslvvntp.cloudfront.net/wp-content/uploads/2017/07/1499401426qr_icon.svg">
+                            <a />
+
+                            <canvas hidden="" id="qr-canvas"></canvas>
+
+                            <div id="qr-result" hidden="">
+                                <b>Data:</b> <span id="outputData"></span>
+                            </div>
                         </div>
                         <div class="col-sm-6">
                             <form method="post" id="manualForm" action="">
-                                <h5 class="card-title">Don't have a username? Check-in manually</h5>
+                                <h5 class="card-title">Check in with your Unique Identifier:</h5>
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="firstName" maxlength="100" placeholder="Given name..." required>
+                                    <input type="text" class="form-control" name="username" id="unique" oninput="disableManual(this.value)" maxlength="100" placeholder="Unique ID..." required>
+                                </div>
+                                <hr />
+
+                                <h5 class="card-title">Check-in manually</h5>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="firstName" id="firstname" oninput="disableUnique(this.value)" maxlength="100" placeholder="First name..." required>
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="lastName" maxlength="100" placeholder="Surname..." required>
+                                    <input type="text" class="form-control" name="lastName" id="lastname" oninput="disableUnique(this.value)" maxlength="100" placeholder="Last name..." required>
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="tel" class="form-control" name="contact" pattern="0[0-9]{9}||[0-9]{9}" placeholder="Contact number..." required>
+                                    <input type="tel" class="form-control" name="contact" id="contact" oninput="disableUnique(this.value)" pattern="0[0-9]{9}||[0-9]{9}" placeholder="Phone number..." required>
                                 </div>
 
                                 <div class="form-group">
@@ -181,11 +223,23 @@
             </div>
         </div>
     </div>
+
+    <script src="js/qrCodeScanner.js"></script>
 </body>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js"></script>
 
 <script>
+    function disableManual(value) {
+        document.getElementById("firstname").disabled = value != "";
+        document.getElementById("lastname").disabled = value != "";
+        document.getElementById("contact").disabled = value != "";
+    }
+    function disableUnique(value) {
+        document.getElementById("unique").disabled = value != "";
+    }
+
     // To be initiated on submit of "manualForm" 
     $("#manualForm").submit(function (e) {
 
