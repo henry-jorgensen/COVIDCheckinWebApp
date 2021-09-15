@@ -25,12 +25,12 @@
                 <div class="card-body">
                     <div class="row d-flex justify-content-center">
                         <div class="col-sm-6 border-right">
-                            <h5 class="card-title">Scan your QR code for a faster checkin</h5>
+                            <h5 class="card-title">Scan your QR code for a faster check-in</h5>
                             <div style="width: auto; height: auto; overflow:auto;" id="reader"></div>
                         </div>
                         <div class="col-sm-6">
-                            <form method="post" id="checkinForm" action="">
-                                <h5 class="card-title">Check in with your Unique Identifier:</h5>
+                            <form method="post" id="checkinForm" action="" autocomplete="off">
+                                <h5 class="card-title">Check-in with your Unique Identifier:</h5>
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="username" id="unique" oninput="disableManual(this.value)" minlength="4" maxlength="100" placeholder="Unique ID..." required>
                                 </div>

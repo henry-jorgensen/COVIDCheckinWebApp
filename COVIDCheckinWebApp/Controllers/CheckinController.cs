@@ -76,9 +76,8 @@ namespace COVIDCheckinWebApp.Controllers
                     checkingUniqueIds.Parameters.AddWithValue("@uniqueId", uniqueId + "%");
 
                     var theCount = checkingUniqueIds.ExecuteScalar();
-                    theCount = theCount.ToString();
 
-                    if (theCount != "0")
+                    if (theCount.ToString() != "0")
                     {
                         uniqueId = uniqueId + theCount.ToString();
                     }
