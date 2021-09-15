@@ -52,6 +52,9 @@ namespace COVIDCheckinWebApp
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "api/{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
