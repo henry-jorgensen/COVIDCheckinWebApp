@@ -125,5 +125,12 @@ namespace COVIDCheckinWebApp.Controllers
 
             return Content("Error! Something went wrong...");
         }
+
+        // POST: api/Checkin/manual/
+        [HttpPost]
+        public IActionResult Unique()
+        {
+            return Content("Not yet implemented.");
+        }
     }
 }
