@@ -1,7 +1,8 @@
 ﻿@page
 @using System;
-@using System.Configuration;
+@using System.Text;
 @using System.Data.SqlClient;
+@using System.Security.Cryptography;
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Home";
@@ -41,10 +42,106 @@
                 businessNumber = reader.GetString(6);
             }
         }
+        db.Close();
+
+        var newEmail = "";
+        var newPhone = "";
+
+        var newVenueName = "";
+        var newVenueOwner = "";
+        var newVenuePhone = "";
+        var newVenueAddress = "";
+
+        var oldPassword = "";
+        var newPassword = "";
+        var newPassword2 = "";
+
+        if (Request.Method == "POST" && String.IsNullOrEmpty(Request.Query["e"]))
+        {
+            newEmail = Request.Form["newEmail"];
+            newPhone = Request.Form["newPhone"];
+
+            //Update email
+            if (newEmail != "" && newPhone != "" && (newEmail != email || newPhone != phone))
+            {
+                SqlCommand update = new SqlCommand("UPDATE Venue SET ownerEmail=@0, ownerPhone=@1 WHERE venueId = @2", db);
+                update.Parameters.AddWithValue("@0", newEmail.ToUpper());
+                update.Parameters.AddWithValue("@1", newPhone);
+                update.Parameters.AddWithValue("@2", venueIdString);
+
+                db.Open();
+                update.ExecuteNonQuery();
+                db.Close();
+
+                email = newEmail.ToUpper();
+                phone = newPhone;
+            }
+        }
+
+        if (Request.Method == "POST" && Request.Query["e"] == "venue")
+        {
+            newVenueName = Request.Form["newVenueName"];
+            newVenueOwner = Request.Form["newVenueOwner"];
+            newVenuePhone = Request.Form["newVenuePhone"];
+            newVenueAddress = Request.Form["newVenueAddress"];
+
+            if (newVenueName != "" && newVenueOwner != "" && newVenuePhone != "" && newVenueAddress != "" && (newVenueName.ToUpper() != businessName || newVenueOwner.ToUpper() != businessOwner || newVenuePhone != businessNumber || newVenueAddress.ToUpper() != businessAddress))
+            {
+                SqlCommand update = new SqlCommand("UPDATE Venue SET venueName=@0, venueOwner=@1, venuePhone=@2, venueAddress=@3 WHERE venueId = @4", db);
+                update.Parameters.AddWithValue("@0", newVenueName.ToUpper());
+                update.Parameters.AddWithValue("@1", newVenueOwner.ToUpper());
+                update.Parameters.AddWithValue("@2", newVenuePhone);
+                update.Parameters.AddWithValue("@3", newVenueAddress.ToUpper());
+                update.Parameters.AddWithValue("@4", venueIdString);
+
+                db.Open();
+                update.ExecuteNonQuery();
+                db.Close();
+
+                businessName = newVenueName.ToUpper();
+                businessOwner = newVenueOwner.ToUpper();
+                businessNumber = newVenuePhone;
+                businessAddress = newVenueAddress.ToUpper();
+            }
+        }
+
+        if (Request.Method == "POST" && Request.Query["e"] == "password")
+        {
+            oldPassword = Request.Form["oldPassword"];
+            newPassword = Request.Form["newPassword"];
+            newPassword2 = Request.Form["newPassword2"];
+
+            if (oldPassword != "" && newPassword != "" && oldPassword != newPassword && newPassword==newPassword2 && Encrypt(oldPassword) == password)
+            {
+                SqlCommand update = new SqlCommand("UPDATE Venue SET ownerPassword=@0 WHERE venueId = @2", db);
+                update.Parameters.AddWithValue("@0", Encrypt(newPassword));
+                update.Parameters.AddWithValue("@2", venueIdString);
+
+                db.Open();
+                update.ExecuteNonQuery();
+                db.Close();
+
+                password = Encrypt(newPassword);
+            }
+        }
+    }
+
+    static string Encrypt(string data)
+    {
+        using (SHA256 hash = SHA256.Create())
+        {
+            byte[] bytes = hash.ComputeHash(Encoding.UTF8.GetBytes(data));
+
+            StringBuilder builder = new StringBuilder();
+
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                builder.Append(bytes[i].ToString("x2"));
+            }
+            return builder.ToString();
+        }
     }
 }
-
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJG02FQOVVRvnAMzRdFvNo9QLLcBsNLIY&libraries=places&callback=initialize"></script>
 
 <div class="container">
     <main role="main" class="pb-3">
@@ -52,105 +149,120 @@
         @{
             if (Request.Cookies["venueId"] != null)
             {
-                <div class="row d-flex justify-content-center">
-                    <div class="col-sm-6">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Your details</h5>
-
-                                Venue ID: @Request.Cookies["venueId"]<br />
-                            </div>
-                        </div>
+                <div class="card text-center">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs">
+                            <li class="nav-item">
+                                <div class="nav-link">Venue ID: @Request.Cookies["venueId"]</div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(String.IsNullOrEmpty(Request.Query["e"]) ? "active" : "")" href="index">Account Details</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(Request.Query["e"] == "venue" ? "active" : "")" href="?e=venue">Venue Details</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(Request.Query["e"] == "password" ? "active" : "")" href="?e=password">Password</a>
+                            </li>
+                        </ul>
                     </div>
-                </div><br />
-                <form method="post" action="">
-                    <div class="row d-flex justify-content-center">
-                        <div class="col-sm-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Update Account Details</h5>
+                    <div class="card-body">
+                        @if (Request.Query["e"] == "venue")
+                        {
+                            //Update venue details
+                            <div class="col">
+                                <h5 class="card-title">Update Venue Details</h5>
+
+                                <form method="post" action="">
                                     <div class="form-group">
-                                        <input type="email" class="form-control" name="email" placeholder="Email..." value="@email" required>
+                                        <input type="text" class="form-control" name="newVenueName" placeholder="Business name..." value="@businessName" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="tel" class="form-control" name="phone" placeholder="Contact number..." value="@phone" pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
+                                        <input type="text" class="form-control" name="newVenueOwner" placeholder="Business owner..." value="@businessOwner" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="newVenueAddress" id="newVenueAddress" placeholder="Business address..." value="@businessAddress" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="tel" class="form-control" name="newVenuePhone" placeholder="Business phone number..." value="@businessNumber" pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
                                     </div>
 
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-primary">Update</button>
                                     </div>
-                                </div>
+                                </form>
                             </div>
-                        </div>
-                    </div>
-                </form><br />
+                        }
+                        else if (Request.Query["e"] == "password")
+                        {
+                            //Update password details
+                            <div class="col">
+                                <h5 class="card-title">Update Password</h5>
 
-                <form method="post" action="">
-                    <div class="row d-flex justify-content-center">
-                        <div class="col-sm-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Update Account Password</h5>
+                                <form method="post" action="">
                                     <div class="form-group">
-                                        <input type="password" class="form-control" name="password" placeholder="Current password..." id="oldpassword" required>
+                                        <input type="password" class="form-control" name="oldPassword" placeholder="Current password..." id="oldPassword" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="password" class="form-control" name="password" placeholder="New password..." id="newpassword" required>
+                                        <input type="password" class="form-control" name="newPassword" placeholder="New password..." id="newPassword" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="password" class="form-control" name="password2" placeholder="Confirm password..." id="newpassword2" required>
+                                        <input type="password" class="form-control" name="newPassword2" placeholder="Confirm password..." id="newPassword2" oninput="matchPassword(this)" required>
                                     </div>
 
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-primary">Update</button>
                                     </div>
-                                </div>
+                                </form>
                             </div>
-                        </div>
-                    </div>
-                </form><br />
+                        }
+                        else
+                        {
+                            //Update account details
+                            <div class="col">
+                                <h5 class="card-title">Update Account Details</h5>
 
-                <form method="post" action="">
-                    <div class="row d-flex justify-content-center">
-                        <div class="col-sm-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Update Venue Details</h5>
+                                <form method="post" action="">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" name="businessname" placeholder="Business name..." value="@businessName" required>
+                                        <input type="email" class="form-control" name="newEmail" placeholder="Email..." value="@email" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="text" class="form-control" name="businessowner" placeholder="Business owner..." value="@businessOwner" required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" name="businessaddress" id="businessaddress" placeholder="Business address..." value="@businessAddress" required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <input type="tel" class="form-control" name="businessnumber" placeholder="Business phone number..." value="@businessNumber" pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
+                                        <input type="tel" class="form-control" name="newPhone" placeholder="Contact number..." value="@phone" pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
                                     </div>
 
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-primary">Update</button>
                                     </div>
-                                </div>
+                                </form>
                             </div>
-                        </div>
+                        }
                     </div>
-                </form>
+                </div>
             }
         }
     </main>
 </div>
 
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJG02FQOVVRvnAMzRdFvNo9QLLcBsNLIY&libraries=places&callback=initialize"></script>
+
 <script language='javascript' type='text/javascript'>
+    function matchPassword(password) {
+    if (password.value != document.getElementById('newPassword').value) {
+            password.setCustomValidity('Passwords must match.');
+        }
+        else {
+            password.setCustomValidity('');
+        }
+    }
+
     function initialize() {
-        var input = document.getElementById('businessaddress');
+        var input = document.getElementById('newVenueAddress');
         new google.maps.places.Autocomplete(input);
     }
 
