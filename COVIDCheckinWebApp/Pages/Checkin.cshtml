@@ -112,6 +112,11 @@
             var url = "api/Checkin/Manual"
         }
 
+        html5QrCode.stop().then((ignore) => {
+            // QR Code scanning is stopped.
+        }).catch((err) => {
+            // Stop failed, handle it.
+        });
 
         // AJAX Request
         $.ajax({
@@ -131,12 +136,6 @@
                 document.getElementById("lastname").disabled = false;
                 document.getElementById("contact").disabled = false;
                 document.getElementById("unique").disabled = false;
-
-                html5QrCode.stop().then((ignore) => {
-                    // QR Code scanning is stopped.
-                }).catch((err) => {
-                    // Stop failed, handle it.
-                });
 
                 // Hides "manualSuccessful" modal after 5 seconds
                 setTimeout(function () {
