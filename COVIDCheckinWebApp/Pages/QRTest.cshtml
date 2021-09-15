@@ -7,20 +7,19 @@
 <html>
 <head>
     <script src="/js/html5-qrcode.min.js"></script>
-
 </head>
 
 <body>
     <div style="width: 500px" id="reader"></div>
     <script>
-          function onScanSuccess(decodedText, decodedResult) {
-              // Handle on success condition with the decoded text or result.
-              console.log(`Scan result: ${decodedText}`, decodedResult);
-          }
+        const html5QrCode = new Html5Qrcode("reader");
+        const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+            alert(decodedText);
+            console.log(`Scan result: ${decodedText}`, decodedResult);
+        };
+        const config = { fps: 10, qrbox: 250 };
 
-          var html5QrcodeScanner = new Html5QrcodeScanner(
-              "reader", { fps: 10, qrbox: 250 });
-          html5QrcodeScanner.render(onScanSuccess);
+        html5QrCode.start({ facingMode: "user" }, config, qrCodeSuccessCallback);
     </script>
 </body>
 </html>
