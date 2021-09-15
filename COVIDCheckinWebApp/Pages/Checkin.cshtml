@@ -142,8 +142,11 @@
 <script>
     const html5QrCode = new Html5Qrcode("reader");
     const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-        alert(decodedText);
-        console.log(`Scan result: ${decodedText}`, decodedResult);
+        document.getElementById("firstname").disabled = true;
+        document.getElementById("lastname").disabled = true;
+        document.getElementById("contact").disabled = true;
+        document.getElementById("unique").value = decodedText;
+        document.getElementById("checkinSubmit").click();
     };
     const config = { fps: 10, qrbox: 250 };
 
