@@ -154,14 +154,19 @@ namespace COVIDCheckinWebApp.Controllers
                 }
                 else
                 {
-                    // Notify user of incorrect username.
+                    db.Close();
+                    return StatusCode(500);
                 }
 
                 // Close connection + end script.
                 db.Close();
                 return Content(uName);
             }
-            return Content("Error, invalid username");
+        else
+            {
+                return StatusCode(500);
+            }
+
         }
     }
 }
