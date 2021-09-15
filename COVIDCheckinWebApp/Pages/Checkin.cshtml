@@ -32,22 +32,23 @@
                             <form method="post" id="checkinForm" action="">
                                 <h5 class="card-title">Check in with your Unique Identifier:</h5>
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="username" id="unique" oninput="disableManual(this.value)" maxlength="100" placeholder="Unique ID..." required>
+                                    <input type="text" class="form-control" name="username" id="unique" oninput="disableManual(this.value)" minlength="4" maxlength="100" placeholder="Unique ID..." required>
                                 </div>
                                 <hr />
 
                                 <h5 class="card-title">Check-in manually</h5>
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="firstName" id="firstname" oninput="disableUnique(this.value)" maxlength="100" placeholder="First name..." required>
+                                    <input type="text" class="form-control" name="firstName" id="firstname" oninput="disableUnique(this.value)" minlength="2" maxlength="100" placeholder="First name..." required>
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="lastName" id="lastname" oninput="disableUnique(this.value)" maxlength="100" placeholder="Last name..." required>
+                                    <input type="text" class="form-control" name="lastName" id="lastname" oninput="disableUnique(this.value)" minlength="2" maxlength="100" placeholder="Last name..." required>
                                 </div>
 
                                 <div class="form-group">
                                     <input type="tel" class="form-control" name="contact" id="contact" oninput="disableUnique(this.value)" pattern="0[0-9]{9}||[0-9]{9}" placeholder="Phone number..." required>
-                                </div>
+                                    <small class="form-text text-muted">Format: 0123456789 or 123456789
+</div>
 
                                 <div class="form-group">
                                     <button type="submit" id="checkinSubmit" class="btn btn-primary" onsubmit="">Check-in</button>
@@ -73,7 +74,9 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" fill="green" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
                     </svg>
-                    <p class="h3 justify-content-center">You have successfully checked into @Request.Cookies["venueName"].</p>
+                    <p class="h3 justify-content-center">Checkin Successful!</p>
+                    <p class="h4 justify-content-center">Location: @Request.Cookies["venueName"]</p>
+                    <p id="modalName" class="h4 justify-content-center"></p>
                 </div>
             </div>
         </div>
@@ -121,6 +124,10 @@
 
             // To be done if AJAX Request is successful
             success: function (resp) {
+
+                // Displaying name in modal.
+                var modalName = document.getElementById("modalName");
+                modalName.innerText = "Next time you can use: " + resp.toUpperCase();
 
                 // Shows "manualSuccessful" modal
                 $('#manualSuccessful').modal('show');
