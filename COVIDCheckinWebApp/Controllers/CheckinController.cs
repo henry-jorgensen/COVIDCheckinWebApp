@@ -120,9 +120,8 @@ namespace COVIDCheckinWebApp.Controllers
 
                 // Close connection.
                 db.Close();
-                return Content(IDResult.ToString());
+                return Content(uniqueId);
             }
-
             return Content("Error! Something went wrong...");
         }
 
