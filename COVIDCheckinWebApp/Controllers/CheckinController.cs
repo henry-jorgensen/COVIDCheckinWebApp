@@ -130,7 +130,39 @@ namespace COVIDCheckinWebApp.Controllers
         [HttpPost]
         public IActionResult Unique()
         {
-            return Content("Not yet implemented.");
+            if (!string.IsNullOrWhiteSpace(Request.Form["username"]))
+            {
+                SqlConnection db = new SqlConnection(connectionString());
+                // Get form data.
+                string uName = Request.Form["username"];
+
+                db.Open();
+
+                // Check for uniqueId in database + store result.
+                SqlCommand existingID = new SqlCommand("SELECT ID FROM Users WHERE uniqueId = @uName", db);
+                existingID.Parameters.AddWithValue("@uName", uName);
+
+                var existingIDResult = existingID.ExecuteScalar();
+
+                // If uniqueId exists, log a new checkin. Else, notify user of incorrect details.
+                if (existingIDResult != null)
+                {
+                    SqlCommand newCheckin = new SqlCommand("INSERT INTO CheckinLogs (dateLog, venueId, uniqueId) VALUES (@dateLog, @venueId, @uniqueId)", db);
+                    newCheckin.Parameters.AddWithValue("@dateLog", DateTime.Now);
+                    newCheckin.Parameters.AddWithValue("@venueId", Request.Cookies["venueId"]);
+                    newCheckin.Parameters.AddWithValue("@uniqueId", existingIDResult);
+                    newCheckin.ExecuteNonQuery();
+                }
+                else
+                {
+                    // Notify user of incorrect username.
+                }
+
+                // Close connection + end script.
+                db.Close();
+                return Content(uName);
+            }
+            return Content("Error, invalid username");
         }
     }
 }
