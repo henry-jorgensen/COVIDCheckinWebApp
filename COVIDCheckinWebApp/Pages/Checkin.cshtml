@@ -15,6 +15,7 @@
     
 }
 
+<script src="/js/html5-qrcode.min.js"></script>
 <body>
     <div class="container">
         <main role="main" class="pb-3 align-self-center">
@@ -24,6 +25,7 @@
                     <div class="row d-flex justify-content-center">
                         <div class="col-sm-6 border-right">
                             <h5 class="card-title">Scan your QR code for a faster checkin</h5>
+                            <div style="width: 500px" id="reader"></div>
                         </div>
                         <div class="col-sm-6">
                             <form method="post" id="checkinForm" action="">
@@ -136,4 +138,14 @@
             }
         });
     });
+</script>
+<script>
+    const html5QrCode = new Html5Qrcode("reader");
+    const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+        alert(decodedText);
+        console.log(`Scan result: ${decodedText}`, decodedResult);
+    };
+    const config = { fps: 10, qrbox: 250 };
+
+    html5QrCode.start({ facingMode: "user" }, config, qrCodeSuccessCallback);
 </script>
