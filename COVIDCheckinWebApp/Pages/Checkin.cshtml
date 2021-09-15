@@ -132,9 +132,16 @@
                 document.getElementById("contact").disabled = false;
                 document.getElementById("unique").disabled = false;
 
+                html5QrCode.stop().then((ignore) => {
+                    // QR Code scanning is stopped.
+                }).catch((err) => {
+                    // Stop failed, handle it.
+                });
+
                 // Hides "manualSuccessful" modal after 5 seconds
                 setTimeout(function () {
-                    $('#manualSuccessful').modal('hide');
+                    $('#manualSuccessful').modal('hide')
+                    html5QrCode.start({ facingMode: "user" }, config, qrCodeSuccessCallback);
                 }, 5000);
             }
         });
@@ -142,14 +149,19 @@
 </script>
 <script>
     const html5QrCode = new Html5Qrcode("reader");
-    const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+    const qrCodeSuccessCallback = (decodedText) => {
         document.getElementById("firstname").disabled = true;
         document.getElementById("lastname").disabled = true;
         document.getElementById("contact").disabled = true;
         document.getElementById("unique").value = decodedText;
         document.getElementById("checkinSubmit").click();
+        
     };
     const config = { fps: 10, qrbox: 250 };
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
     html5QrCode.start({ facingMode: "user" }, config, qrCodeSuccessCallback);
 </script>
