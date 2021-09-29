@@ -2,6 +2,7 @@
 @using System;
 @using System.Diagnostics;
 @using System.Data.SqlClient;
+@using Models;
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Reports";
@@ -17,6 +18,9 @@
 
     List<string> dropdownListVenues = new List<string>();
     List<string> dropdownListUsers = new List<string>();
+
+    List<CustomerDetail> customers = new List<CustomerDetail>();
+    List<VenueDetail> venues = new List<VenueDetail>();
     db.Open();
 
 
