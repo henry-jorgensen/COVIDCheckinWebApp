@@ -1,4 +1,7 @@
 ﻿@page
+@using System;
+@using System.Diagnostics;
+@using System.Data.SqlClient;
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Reports";
@@ -8,4 +11,83 @@
         //Redirect to index if we are logged in
         Response.Redirect("Register");
     }
+
+    String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
+    SqlConnection db = new SqlConnection(connectionString);
+
+    List<string> dropdownListVenues = new List<string>();
+    List<string> dropdownListUsers = new List<string>();
+    db.Open();
+
+
+    SqlCommand venueDropdown = new SqlCommand("SELECT venueName FROM Venue", db);
+    SqlDataReader readerVenue = venueDropdown.ExecuteReader();
+
+    while (readerVenue.Read())
+    {
+        string venuename = readerVenue.GetString(0);
+        dropdownListVenues.Add(venuename);
+    }
+
+    readerVenue.Close();
+
+    SqlCommand userDropdown = new SqlCommand("SELECT firstName, LastName, uniqueId FROM Users", db);
+    SqlDataReader readerUser = userDropdown.ExecuteReader();
+
+    while (readerUser.Read())
+    {
+        string username = readerUser.GetString(0) + " " + readerUser.GetString(1) + " (" +readerUser.GetString(2) + ")";
+        dropdownListUsers.Add(username);
+    }
+
+    readerUser.Close();
+
+    var formVenueName = "";
+    var formUserName = "";
+
+    if (Request.Method == "POST")
+    {
+        Debug.WriteLine("K");
+        formVenueName = Request.Form["venueValue"];
+        formUserName = Request.Form["userValue"];
+
+        SqlCommand dataSearch = new SqlCommand("");
+        //TO DO
+        dataSearch.Parameters.AddWithValue("@", 0);
+
+    }
+
+
+    db.Close();
+
 }
+
+
+<form method="post" class="row">
+    <div>
+        <input list="venueSearch" name="venueValue" class="form-control" placeholder="Enter venue name..." />
+        <datalist id="venueSearch">
+            @foreach (var venue in dropdownListVenues)
+            {
+                <option>@venue</option>
+            }
+        </datalist>
+    </div>
+    <div>
+        <input list="userSearch" name="userValue" class="form-control" placeholder="Enter name..." />
+        <datalist id="userSearch">
+            @foreach (var user in dropdownListUsers)
+            {
+                <option>@user</option>
+            }
+        </datalist>
+    </div>
+    <div>
+        <button type="submit" class="btn btn-outline-primary">Search</button>
+    </div>
+
+</form>
+
+<p>
+    @formVenueName @formUserName
+</p>
