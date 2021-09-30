@@ -16,21 +16,22 @@
     String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
     SqlConnection db = new SqlConnection(connectionString);
 
-    List<string> dropdownListVenues = new List<string>();
-    List<string> dropdownListUsers = new List<string>();
+    List<VenueDetail> dropdownListVenues = new List<VenueDetail>();
+    List<CustomerDetail> dropdownListUsers = new List<CustomerDetail>();
 
     List<CustomerDetail> customers = new List<CustomerDetail>();
     List<VenueDetail> venues = new List<VenueDetail>();
     db.Open();
 
 
-    SqlCommand venueDropdown = new SqlCommand("SELECT venueName FROM Venue", db);
+    SqlCommand venueDropdown = new SqlCommand("SELECT venueName, venueId FROM Venue", db);
     SqlDataReader readerVenue = venueDropdown.ExecuteReader();
 
     while (readerVenue.Read())
     {
         string venuename = readerVenue.GetString(0);
-        dropdownListVenues.Add(venuename);
+        int venueId = readerVenue.GetInt32(1);
+        dropdownListVenues.Add(new VenueDetail() { venueName = venuename, venueId = venueId });
     }
 
     readerVenue.Close();
@@ -40,24 +41,70 @@
 
     while (readerUser.Read())
     {
-        string username = readerUser.GetString(0) + " " + readerUser.GetString(1) + " (" +readerUser.GetString(2) + ")";
-        dropdownListUsers.Add(username);
+        string firstName = readerUser.GetString(0);
+        string lastName = readerUser.GetString(1);
+        string uniqueId = readerUser.GetString(2);
+        dropdownListUsers.Add(new CustomerDetail() { firstName = firstName, lastName = lastName, uniqueId = uniqueId });
     }
 
     readerUser.Close();
 
-    var formVenueName = "";
-    var formUserName = "";
+    var formVenueValue = "";
+    var formUserValue = "";
 
     if (Request.Method == "POST")
     {
         Debug.WriteLine("K");
-        formVenueName = Request.Form["venueValue"];
-        formUserName = Request.Form["userValue"];
+        formVenueValue = Request.Form["venueValue"];
+        formUserValue = Request.Form["userValue"];
 
-        SqlCommand dataSearch = new SqlCommand("");
-        //TO DO
-        dataSearch.Parameters.AddWithValue("@", 0);
+
+        if (formVenueValue == "")
+        {
+            SqlCommand dataSearch = new SqlCommand("SELECT v.venueName, v.venueAddress, v.venuePhone, v.ownerPhone, cl.dateLog FROM Users as u JOIN CheckinLogs " +
+                                                "as cl on u.ID = cl.uniqueId join Venue as v on v.venueId = cl.venueId " +
+                                                "WHERE u.uniqueId = @0 ORDER BY dateLog DESC", db);
+            //TO DO
+            dataSearch.Parameters.AddWithValue("@0", formUserValue);
+
+            SqlDataReader resultsReader = dataSearch.ExecuteReader();
+
+            while (resultsReader.Read())
+            {
+                string venueName = resultsReader.GetString(0);
+                string venueAddress = resultsReader.GetString(1);
+                string venuePhone = resultsReader.GetString(2);
+                string ownerName = resultsReader.GetString(3);
+                DateTime logDate = resultsReader.GetDateTime(4);
+                venues.Add(new VenueDetail { venueName = venueName, venueAddress = venueAddress, venuePhone = venuePhone, ownerName = ownerName, logDate = logDate });
+
+            }
+
+            resultsReader.Close();
+        }
+
+        if (formUserValue == "")
+        {
+            SqlCommand dataSearch = new SqlCommand("SELECT u.firstName, u.lastName, u.phoneNumber, cl.dateLog FROM Users as u JOIN CheckinLogs " +
+                                                "as cl on u.ID = cl.uniqueId join Venue as v on v.venueId = cl.venueId " +
+                                                "WHERE v.venueName LIKE @0 ORDER BY dateLog DESC", db);
+            //TO DO
+            dataSearch.Parameters.AddWithValue("@0", formVenueValue);
+
+            SqlDataReader resultsReader = dataSearch.ExecuteReader();
+
+            while (resultsReader.Read())
+            {
+                string firstName = resultsReader.GetString(0);
+                string lastName = resultsReader.GetString(1);
+                string phoneNumber = resultsReader.GetString(2);
+                DateTime logDate = resultsReader.GetDateTime(3);
+                customers.Add(new CustomerDetail { firstName = firstName, lastName = lastName, phoneNumber = phoneNumber, logDate = logDate });
+
+            }
+
+            resultsReader.Close();
+        }
 
     }
 
@@ -73,7 +120,7 @@
         <datalist id="venueSearch">
             @foreach (var venue in dropdownListVenues)
             {
-                <option>@venue</option>
+                <option value="@venue.venueName">@venue.venueId</option>
             }
         </datalist>
     </div>
@@ -82,7 +129,7 @@
         <datalist id="userSearch">
             @foreach (var user in dropdownListUsers)
             {
-                <option>@user</option>
+                <option value="@user.uniqueId">@user.firstName @user.lastName</option>
             }
         </datalist>
     </div>
@@ -92,6 +139,33 @@
 
 </form>
 
-<p>
-    @formVenueName @formUserName
-</p>
+@if (venues != null)
+{
+    @foreach (var venue in venues)
+    {
+
+
+        <p>
+            @venue.venueName<br />
+            @venue.venueAddress<br />
+            @venue.venuePhone<br />
+            @venue.ownerName <br />
+            @venue.logDate
+        </p>
+    }
+}
+
+@if (customers != null)
+{
+    @foreach (var customer in customers)
+    {
+
+
+        <p>
+            @customer.firstName<br />
+            @customer.lastName<br />
+            @customer.phoneNumber<br />
+            @customer.logDate
+        </p>
+    }
+}
