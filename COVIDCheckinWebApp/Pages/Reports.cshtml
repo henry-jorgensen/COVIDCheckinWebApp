@@ -61,8 +61,8 @@
 
         if (formVenueValue == "")
         {
-            SqlCommand dataSearch = new SqlCommand("SELECT v.venueName, v.venueAddress, v.venuePhone, v.ownerPhone, cl.dateLog FROM Users as u JOIN CheckinLogs " +
-                                                "as cl on u.ID = cl.uniqueId join Venue as v on v.venueId = cl.venueId " +
+            SqlCommand dataSearch = new SqlCommand("SELECT v.venueName, v.venueAddress, v.venuePhone, v.ownerPhone, cl.dateLog FROM Users AS u JOIN CheckinLogs " +
+                                                "AS cl ON u.ID = cl.uniqueId JOIN Venue AS v ON v.venueId = cl.venueId " +
                                                 "WHERE u.uniqueId = @0 ORDER BY dateLog DESC", db);
             //TO DO
             dataSearch.Parameters.AddWithValue("@0", formUserValue);
@@ -85,8 +85,8 @@
 
         if (formUserValue == "")
         {
-            SqlCommand dataSearch = new SqlCommand("SELECT u.firstName, u.lastName, u.phoneNumber, cl.dateLog FROM Users as u JOIN CheckinLogs " +
-                                                "as cl on u.ID = cl.uniqueId join Venue as v on v.venueId = cl.venueId " +
+            SqlCommand dataSearch = new SqlCommand("SELECT u.firstName, u.lastName, u.phoneNumber, cl.dateLog FROM Users AS u JOIN CheckinLogs " +
+                                                "AS cl ON u.ID = cl.uniqueId JOIN Venue AS v ON v.venueId = cl.venueId " +
                                                 "WHERE v.venueName LIKE @0 ORDER BY dateLog DESC", db);
             //TO DO
             dataSearch.Parameters.AddWithValue("@0", formVenueValue);
