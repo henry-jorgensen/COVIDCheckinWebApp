@@ -51,6 +51,7 @@
 
     var formVenueValue = "";
     var formUserValue = "";
+    var userSearchName = "";
 
     if (Request.Method == "POST")
     {
@@ -61,7 +62,7 @@
 
         if (formVenueValue == "")
         {
-            SqlCommand dataSearch = new SqlCommand("SELECT v.venueName, v.venueAddress, v.venuePhone, v.ownerPhone, cl.dateLog FROM Users AS u JOIN CheckinLogs " +
+            SqlCommand dataSearch = new SqlCommand("SELECT v.venueName, v.venueAddress, v.venuePhone, v.ownerPhone, cl.dateLog, u.firstName, u.lastName FROM Users AS u JOIN CheckinLogs " +
                                                 "AS cl ON u.ID = cl.uniqueId JOIN Venue AS v ON v.venueId = cl.venueId " +
                                                 "WHERE u.uniqueId = @0 ORDER BY dateLog DESC", db);
             //TO DO
@@ -76,6 +77,7 @@
                 string venuePhone = resultsReader.GetString(2);
                 string ownerName = resultsReader.GetString(3);
                 DateTime logDate = resultsReader.GetDateTime(4);
+                userSearchName = resultsReader.GetString(5) + " " + resultsReader.GetString(6);
                 venues.Add(new VenueDetail { venueName = venueName, venueAddress = venueAddress, venuePhone = venuePhone, ownerName = ownerName, logDate = logDate });
 
             }
@@ -115,7 +117,7 @@
 
 
 <form method="post" class="row">
-    <div>
+    <div class="col-4">
         <input list="venueSearch" name="venueValue" class="form-control" placeholder="Enter venue name..." />
         <datalist id="venueSearch">
             @foreach (var venue in dropdownListVenues)
@@ -124,7 +126,7 @@
             }
         </datalist>
     </div>
-    <div>
+    <div class="col-4">
         <input list="userSearch" name="userValue" class="form-control" placeholder="Enter name..." />
         <datalist id="userSearch">
             @foreach (var user in dropdownListUsers)
@@ -133,39 +135,87 @@
             }
         </datalist>
     </div>
-    <div>
+    <div class="col-4">
         <button type="submit" class="btn btn-outline-primary">Search</button>
     </div>
 
 </form>
 
-@if (venues != null)
+@if (venues.Count() > 0)
 {
-    @foreach (var venue in venues)
-    {
+    <h1>@userSearchName</h1>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Venue Name</th>
+                <th scope="col">Venue Address</th>
+                <th scope="col">Venue Phone Number</th>
+                <th scope="col">Owner Name</th>
+                <th scope="col">Log Date</th>
+            </tr>
+        </thead>
+        @foreach (var venue in venues)
+        {
+            <tbody>
+                <tr>
+                    <td>
+                        @venue.venueName
+                    </td>
+                    <td>
+                        @venue.venueAddress
+                    </td>
+                    <td>
+                        @venue.venuePhone
+                    </td>
+                    <td>
+                        @venue.ownerName
+                    </td>
+                    <td>
+                        @venue.logDate
+                    </td>
+                </tr>
+            </tbody>
 
 
-        <p>
-            @venue.venueName<br />
-            @venue.venueAddress<br />
-            @venue.venuePhone<br />
-            @venue.ownerName <br />
-            @venue.logDate
-        </p>
-    }
+        }
+    </table>
 }
 
-@if (customers != null)
+
+@if (customers.Count() > 0)
 {
-    @foreach (var customer in customers)
-    {
 
+    <h1>@formVenueValue</h1>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">Phone Number</th>
+                <th scope="col">Log Date</th>
+            </tr>
+        </thead>
+        @foreach (var customer in customers)
+        {
+            <tbody>
+                <tr>
+                    <td>
+                        @customer.firstName
+                    </td>
+                    <td>
+                        @customer.lastName
+                    </td>
+                    <td>
+                        @customer.phoneNumber
+                    </td>
+                    <td>
+                        @customer.logDate
+                    </td>
 
-        <p>
-            @customer.firstName<br />
-            @customer.lastName<br />
-            @customer.phoneNumber<br />
-            @customer.logDate
-        </p>
-    }
+                </tr>
+            </tbody>
+
+        }
+    </table>
 }
+
