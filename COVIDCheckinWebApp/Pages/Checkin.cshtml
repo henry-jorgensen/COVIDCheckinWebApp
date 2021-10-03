@@ -1,161 +1,285 @@
 ﻿@page
-@using System;
-@using System.Data.SqlClient;
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Checkin";
-
-    if (Request.Cookies["venueId"] == null)
-    {
-        //Redirect to index if we are logged in
-        Response.Redirect("Register");
-    }
-
-    // Connecting to database.
-
 }
 
-<script src="/js/html5-qrcode.min.js"></script>
+<style>
+    html {
+        width: 100%;
+        height: 100%;
+    }
+
+    body {
+        height: 100%;
+        background: linear-gradient(45deg, rgba(66, 183, 245,0.8) 0%,rgba(66, 245, 189,0.4) 100%);
+        font-family: "Roboto", sans-serif;
+        font-size: 14px;
+        line-height: 1.6em;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    h3, .h3 {
+        color: rgb(0 0 0 / 0.6);
+        font-size: 15px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    h4, .h4 {
+        color: rgb(0 0 0 / 0.7);
+        font-size: 17px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    h5, .h5 {
+        padding: 4px 0;
+        color: #4285F4;
+        font-size: 18px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .card {
+        border: 0px;
+        border-radius: 10px;
+        background: white;
+        box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+    }
+
+    .input {
+        color: rgb(0 0 0 / 0.6);
+        outline: none;
+        display: block;
+        background: rgb(0 0 0 / 0.1);
+        width: 100%;
+        border: 0;
+        border-radius: 4px;
+        box-sizing: border-box;
+        padding: 24px 20px;
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: 500;
+        line-height: inherit;
+        transition: 0.3s ease;
+        outline: 0px !important;
+        -webkit-appearance: none;
+    }
+
+        .input:hover {
+            background: rgb(0 0 0 / 0.2);
+            outline: 0px !important;
+            -webkit-appearance: none;
+        }
+
+        .input:focus {
+            background: rgb(0 0 0 / 0.2);
+            outline: 0px !important;
+            -webkit-appearance: none;
+        }
+
+        .input::placeholder {
+            color: rgb(0 0 0 / 0.3);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+
+    .button {
+        outline: none;
+        background: #4285F4;
+        width: 100%;
+        border: 0;
+        border-radius: 4px;
+        padding: 12px 20px;
+        color: white;
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: 700;
+        line-height: inherit;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: 0.3s ease;
+    }
+
+        .button:hover {
+            color: white;
+            filter: brightness(90%);
+        }
+
+        .button:active {
+            color: white;
+            filter: brightness(70%);
+        }
+
+    .label-blue {
+        outline: none;
+        background: #4285F4;
+        border: 0;
+        width: 50%;
+        border-radius: 4px;
+        padding: 12px 20px;
+        color: white;
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: 700;
+        line-height: inherit;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: 0.3s ease;
+        display: block;
+    }
+
+    .label-small {
+        font-weight: 700;
+        color: rgb(0 0 0 / 0.4);
+    }
+
+    .camera-field {
+        width: 100%;
+        height: auto;
+        overflow: auto;
+    }
+</style>
 
 <body>
-    <div class="container">
-        <main role="main" class="pb-3 align-self-center">
-            <br /><br /><br />
+    <div class="container h-100">
+        <div class="row align-items-center justify-content-center h-100">
             <div class="card">
-                <div class="card-body">
-                    <div class="row d-flex justify-content-center">
+                <div class="card-body" style="min-width: 900px">
+                    <div class="row d-flex justify-content-left">
+                        <!--QR Code checkin area-->
                         <div class="col-sm-6 border-right">
-                            <h5 class="card-title">Scan your QR code for a faster check-in</h5>
-                            <div style="width: auto; height: auto; overflow:auto;" id="reader"></div>
+                            <h5 class="card-title">Check-in with your QR code</h5>
+                            <div class="camera-field" id="reader"></div>
                         </div>
+
+                        <!--Manual checkin area-->
                         <div class="col-sm-6">
                             <form method="post" id="checkinForm" action="" autocomplete="off">
-                                <h5 class="card-title">Check-in with your Unique Identifier:</h5>
+                                <h5 class="card-title">Check-in with your Unique ID</h5>
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="username" id="unique" oninput="disableManual(this.value)" minlength="4" maxlength="100" placeholder="Unique ID..." required>
+                                    <input type="text" class="form-control input" name="username" id="unique" oninput="disableManual(this.value)" minlength="4" maxlength="100" placeholder="Unique Identifier" required>
+
                                 </div>
                                 <hr />
 
                                 <h5 class="card-title">Check-in manually</h5>
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="firstName" id="firstname" oninput="disableUnique(this.value)" minlength="2" maxlength="100" placeholder="First name..." required>
+                                    <input type="text" class="form-control input" name="firstName" id="firstname" oninput="disableUnique(this.value)" minlength="2" maxlength="100" placeholder="First name" required>
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="lastName" id="lastname" oninput="disableUnique(this.value)" minlength="2" maxlength="100" placeholder="Last name..." required>
+                                    <input type="text" class="form-control input" name="lastName" id="lastname" oninput="disableUnique(this.value)" minlength="2" maxlength="100" placeholder="Last name" required>
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="tel" class="form-control" name="contact" id="contact" oninput="disableUnique(this.value)" pattern="0[0-9]{9}||[0-9]{9}" placeholder="Phone number..." required>
-                                    <small class="form-text text-muted">Format: 0123456789 or 123456789</small>
+                                    <input type="tel" class="form-control input" name="contact" id="contact" oninput="disableUnique(this.value)" pattern="0[0-9]{9}||[0-9]{9}" placeholder="Contact number" required>
+                                    <small class="form-text label-small">Format: 0123456789 or 123456789</small>
                                 </div>
 
                                 <div class="form-group">
-                                    <button type="submit" id="checkinSubmit" class="btn btn-primary" onsubmit="">Check-in</button>
+                                    <button type="submit" id="checkinSubmit" class="btn button" onsubmit="">Check-in</button>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
-    <div class="modal fade" id="manualSuccessful" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+    <!--Successful manual checkin-->
+    <div class="modal fade" id="manualSuccessful" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Success!</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
                 <div class="modal-body text-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" fill="green" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-                    </svg>
-                    <p class="h3 justify-content-center">Checkin Successful!</p>
-                    <p class="h4 justify-content-center">Location: @Request.Cookies["venueName"]</p>
-                    <p id="modalName" class="h4 justify-content-center"></p>
+                    <div class="row align-items-center justify-content-center" style="margin-top:15px">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" fill="green" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                        </svg>
+                    </div><br /><br />
+
+
+                    <h4>Your Unique ID</h4><br />
+                    <div class="row justify-content-center" style="margin-top:-20px">
+                        <div class="label-blue" id="modalName"></div>
+                    </div><br />
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="manualFailure" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+    <!--Successful UID checkin-->
+    <div class="modal fade" id="uniqueSuccessful" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Failure!</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
                 <div class="modal-body text-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" fill="red" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
-                    </svg>
-                    <p class="h3 justify-content-center">Check-in was unsuccessful. </p>
+                    <div class="row align-items-center justify-content-center" style="margin-top:15px">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" fill="green" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                        </svg>
+                    </div><br /><br />
+
+
+                    <h4>@Request.Cookies["venueName"]</h4>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="uniqueSuccessful" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+    <!--Unsuccessful manual checkin-->
+    <div class="modal fade" id="manualFailure" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Success!</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
                 <div class="modal-body text-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" fill="green" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-                    </svg>
-                    <p class="h3 justify-content-center">You have successfully checked into @Request.Cookies["venueName"].</p>
+                    <div class="row align-items-center justify-content-center" style="margin-top:15px">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" fill="red" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+                        </svg>
+                    </div><br /><br />
+
+
+                    <h4>Check-in failed</h4>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="uniqueFailure" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+    <!--Unsuccessful UID checkin-->
+    <div class="modal fade" id="uniqueFailure" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Failure!</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
                 <div class="modal-body text-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" fill="red" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
-                    </svg>
-                    <p class="h3 justify-content-center">Check-in was unsuccessful. This may have been because you inputted your Unique Identifier incorrectly. Please try again.</p>
+                    <div class="row align-items-center justify-content-center" style="margin-top:15px">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" fill="red" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+                        </svg>
+                    </div><br /><br />
+
+
+                    <h4>Check-in failed</h4>
                 </div>
             </div>
         </div>
     </div>
-
 </body>
 
+<script src="/js/html5-qrcode.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-<script>
-    function disableManual(value) {
+<script>function disableManual(value) {
         document.getElementById("firstname").disabled = value != "";
         document.getElementById("lastname").disabled = value != "";
         document.getElementById("contact").disabled = value != "";
     }
+
     function disableUnique(value) {
         document.getElementById("unique").disabled = value != "";
     }
-</script>
 
-<script>
-    // To be initiated on submit of "manualForm"
     $("#checkinForm").submit(function (e) {
 
         // Prevents normal submit of form
@@ -186,10 +310,9 @@
 
             // To be done if AJAX Request is successful
             success: function (resp) {
-
                 // Displaying name in modal.
                 var modalName = document.getElementById("modalName");
-                modalName.innerText = "Next time you can use: " + resp.toUpperCase();
+                modalName.innerText = resp.toUpperCase();
 
                 // Shows "manualSuccessful" modal
                 $('#manualSuccessful').modal('show');
@@ -223,8 +346,7 @@
 
         });
     });
-</script>
-<script>
+
     const html5QrCode = new Html5Qrcode("reader");
     const qrCodeSuccessCallback = (decodedText) => {
         document.getElementById("firstname").disabled = true;
@@ -234,11 +356,11 @@
         document.getElementById("checkinSubmit").click();
 
     };
+
     const config = { fps: 10, qrbox: 250 };
 
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    html5QrCode.start({ facingMode: "user" }, config, qrCodeSuccessCallback);
-</script>
+    html5QrCode.start({ facingMode: "user" }, config, qrCodeSuccessCallback);</script>

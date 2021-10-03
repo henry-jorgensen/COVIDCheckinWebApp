@@ -9,39 +9,45 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-dark bg-primary navbar-expand-lg">
-            <a class="navbar-brand" href="#">
-                <img src="https://getbootstrap.com/docs/4.1/assets/brand/bootstrap-solid.svg" width="30" height="30" class="d-inline-block align-top" alt="">
-                Venue Management
-            </a>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item @(ViewData["Title"].ToString()=="Home" ? "active" : "")">
-                        <a class="nav-link" href="index">Home <span class="sr-only">(current)</span></a>
-                    </li>
+        @{
+            if (ViewData["Title"].ToString()!="Checkin")
+            {
+                <nav class="navbar navbar-dark bg-primary navbar-expand-lg">
+                    <a class="navbar-brand" href="#">
+                        <img src="https://getbootstrap.com/docs/4.1/assets/brand/bootstrap-solid.svg" width="30" height="30" class="d-inline-block align-top" alt="">
+                        Venue Management
+                    </a>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item @(ViewData["Title"].ToString()=="Home" ? "active" : "")">
+                                <a class="nav-link" href="index">Home <span class="sr-only">(current)</span></a>
+                            </li>
 
-                    <li class="nav-item @(ViewData["Title"].ToString()=="Login" ? "active" : "")">
-                        <a class="nav-link" href="login">Login <span class="sr-only">(current)</span></a>
-                    </li>
+                            <li class="nav-item @(ViewData["Title"].ToString()=="Login" ? "active" : "")">
+                                <a class="nav-link" href="login">Login <span class="sr-only">(current)</span></a>
+                            </li>
 
-                    <li class="nav-item @(ViewData["Title"].ToString()=="Register" ? "active" : "")">
-                        <a class="nav-link" href="register">Register <span class="sr-only">(current)</span></a>
-                    </li>
+                            <li class="nav-item @(ViewData["Title"].ToString()=="Register" ? "active" : "")">
+                                <a class="nav-link" href="register">Register <span class="sr-only">(current)</span></a>
+                            </li>
 
-                    <li class="nav-item @(ViewData["Title"].ToString()=="Checkin" ? "active" : "")">
-                        <a class="nav-link" href="checkin">Checkin <span class="sr-only">(current)</span></a>
-                    </li>
+                            <li class="nav-item @(ViewData["Title"].ToString()=="Checkin" ? "active" : "")">
+                                <a class="nav-link" href="checkin">Checkin <span class="sr-only">(current)</span></a>
+                            </li>
 
-                    <li class="nav-item @(ViewData["Title"].ToString()=="Reports" ? "active" : "")">
-                        <a class="nav-link" href="reports">Reports <span class="sr-only">(current)</span></a>
-                    </li>
+                            <li class="nav-item @(ViewData["Title"].ToString()=="Reports" ? "active" : "")">
+                                <a class="nav-link" href="reports">Reports <span class="sr-only">(current)</span></a>
+                            </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="logout">Logout <span class="sr-only">(current)</span></a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+                            <li class="nav-item">
+                                <a class="nav-link" href="logout">Logout <span class="sr-only">(current)</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            }
+
+        }
     </header>
 
     @RenderBody()   
