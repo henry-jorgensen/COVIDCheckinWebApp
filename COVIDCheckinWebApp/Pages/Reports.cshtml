@@ -13,17 +13,22 @@
         Response.Redirect("Register");
     }
 
+    //Establishing connection to database
     String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
     SqlConnection db = new SqlConnection(connectionString);
 
+
+    //Initialising dropdown lists
     List<VenueDetail> dropdownListVenues = new List<VenueDetail>();
     List<CustomerDetail> dropdownListUsers = new List<CustomerDetail>();
 
+    //Initialising results lists
     List<CustomerDetail> customers = new List<CustomerDetail>();
     List<VenueDetail> venues = new List<VenueDetail>();
+    
     db.Open();
 
-
+    //Filling the venue dropdown list with the venues
     SqlCommand venueDropdown = new SqlCommand("SELECT venueName, venueId FROM Venue", db);
     SqlDataReader readerVenue = venueDropdown.ExecuteReader();
 
@@ -36,6 +41,8 @@
 
     readerVenue.Close();
 
+
+    //Filling the user dropdown list with users 
     SqlCommand userDropdown = new SqlCommand("SELECT firstName, LastName, uniqueId FROM Users", db);
     SqlDataReader readerUser = userDropdown.ExecuteReader();
 
@@ -49,27 +56,32 @@
 
     readerUser.Close();
 
+
+    //Establishing variables for form values
     var formVenueValue = "";
     var formUserValue = "";
     var userSearchName = "";
 
+
+    //Post method that runs necessary queries to grab report data
     if (Request.Method == "POST")
     {
-        Debug.WriteLine("K");
         formVenueValue = Request.Form["venueValue"];
         formUserValue = Request.Form["userValue"];
 
-
+        //Runs SQL query that grabs venue data when a user is inputted into the report search, which returns the list of venues the user has checked into
         if (formVenueValue == "")
         {
-            SqlCommand dataSearch = new SqlCommand("SELECT v.venueName, v.venueAddress, v.venuePhone, v.ownerPhone, cl.dateLog, u.firstName, u.lastName FROM Users AS u JOIN CheckinLogs " +
-                                                "AS cl ON u.ID = cl.uniqueId JOIN Venue AS v ON v.venueId = cl.venueId " +
-                                                "WHERE u.uniqueId = @0 ORDER BY dateLog DESC", db);
-            //TO DO
+            SqlCommand dataSearch = new SqlCommand("SELECT v.venueName, v.venueAddress, v.venuePhone, v.ownerPhone, cl.dateLog, u.firstName, u.lastName " +
+                                                   "FROM Users AS u JOIN CheckinLogs AS cl ON u.ID = cl.uniqueId JOIN Venue AS v ON v.venueId = cl.venueId " +
+                                                   "WHERE u.uniqueId = @0 ORDER BY dateLog DESC", db);
+
             dataSearch.Parameters.AddWithValue("@0", formUserValue);
 
             SqlDataReader resultsReader = dataSearch.ExecuteReader();
 
+
+            //while loop that goes through every row returned from the query and adds it to the list
             while (resultsReader.Read())
             {
                 string venueName = resultsReader.GetString(0);
@@ -85,16 +97,20 @@
             resultsReader.Close();
         }
 
+
+        //Runs SQL query that grabs venue data when a venue is inputted into the report search, which returns the list of users that have checked into that venue
         if (formUserValue == "")
         {
-            SqlCommand dataSearch = new SqlCommand("SELECT u.firstName, u.lastName, u.phoneNumber, cl.dateLog FROM Users AS u JOIN CheckinLogs " +
-                                                "AS cl ON u.ID = cl.uniqueId JOIN Venue AS v ON v.venueId = cl.venueId " +
-                                                "WHERE v.venueName LIKE @0 ORDER BY dateLog DESC", db);
-            //TO DO
+            SqlCommand dataSearch = new SqlCommand("SELECT u.firstName, u.lastName, u.phoneNumber, cl.dateLog " +
+                                                   "FROM Users AS u JOIN CheckinLogs AS cl ON u.ID = cl.uniqueId JOIN Venue AS v ON v.venueId = cl.venueId " +
+                                                   "WHERE v.venueName LIKE @0 ORDER BY dateLog DESC", db);
+
             dataSearch.Parameters.AddWithValue("@0", formVenueValue);
 
             SqlDataReader resultsReader = dataSearch.ExecuteReader();
 
+
+            //While loop that goes through every row returned from the query and adds it to the list
             while (resultsReader.Read())
             {
                 string firstName = resultsReader.GetString(0);
@@ -138,7 +154,6 @@
     <div class="col-4">
         <button type="submit" class="btn btn-outline-primary">Search</button>
     </div>
-
 </form>
 
 @if (venues.Count() > 0)
@@ -157,7 +172,6 @@
         <tbody>
             @foreach (var venue in venues)
             {
-
                 <tr>
                     <td>
                         @venue.venueName
@@ -211,7 +225,6 @@
                     <td>
                         @customer.logDate
                     </td>
-
                 </tr>
             }
         </tbody>
