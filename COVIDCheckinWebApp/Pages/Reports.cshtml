@@ -154,9 +154,10 @@
                 <th scope="col">Log Date</th>
             </tr>
         </thead>
-        @foreach (var venue in venues)
-        {
-            <tbody>
+        <tbody>
+            @foreach (var venue in venues)
+            {
+
                 <tr>
                     <td>
                         @venue.venueName
@@ -174,10 +175,8 @@
                         @venue.logDate
                     </td>
                 </tr>
-            </tbody>
-
-
-        }
+            }
+        </tbody>
     </table>
 }
 
@@ -195,9 +194,10 @@
                 <th scope="col">Log Date</th>
             </tr>
         </thead>
-        @foreach (var customer in customers)
-        {
-            <tbody>
+        <tbody>
+            @foreach (var customer in customers)
+            {
+
                 <tr>
                     <td>
                         @customer.firstName
@@ -213,9 +213,8 @@
                     </td>
 
                 </tr>
-            </tbody>
-
-        }
+            }
+        </tbody>
     </table>
 }
 
