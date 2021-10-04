@@ -103,7 +103,7 @@
         //Runs SQL query that grabs venue data when a venue is inputted into the report search, which returns the list of users that have checked into that venue
         if (formUserValue == "")
         {
-            SqlCommand dataSearch = new SqlCommand("SELECT u.firstName, u.lastName, u.phoneNumber, cl.dateLog " +
+            SqlCommand dataSearch = new SqlCommand("SELECT u.firstName, u.lastName, u.phoneNumber, cl.dateLog, u.uniqueId " +
                                                    "FROM Users AS u JOIN CheckinLogs AS cl ON u.ID = cl.uniqueId JOIN Venue AS v ON v.venueId = cl.venueId " +
                                                    "WHERE v.venueName LIKE @0 ORDER BY dateLog DESC", db);
 
@@ -119,7 +119,8 @@
                 string lastName = resultsReader.GetString(1);
                 string phoneNumber = resultsReader.GetString(2);
                 DateTime logDate = resultsReader.GetDateTime(3);
-                customers.Add(new CustomerDetail { firstName = firstName, lastName = lastName, phoneNumber = phoneNumber, logDate = logDate });
+                string uniqueId = resultsReader.GetString(4);
+                customers.Add(new CustomerDetail { firstName = firstName, lastName = lastName, phoneNumber = phoneNumber, logDate = logDate, uniqueId = uniqueId });
 
             }
 
@@ -263,6 +264,7 @@
     <table class="table table-hover table-striped">
         <thead>
             <tr>
+                <th scope="col">Unique ID</th>
                 <th scope="col">First Name</th>
                 <th scope="col">Last Name</th>
                 <th scope="col">Phone Number</th>
