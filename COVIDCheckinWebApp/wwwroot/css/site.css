@@ -202,4 +202,6 @@ h5, .h5 {
     width: 100%;
     height: auto;
     overflow: auto;
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
 }
