@@ -175,23 +175,27 @@
 
                                 <form method="post" action="">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" name="newVenueName" placeholder="Business name..." value="@businessName" required>
+                                        <input type="text" class="form-control input" name="newVenueName" placeholder="Business name..." value="@businessName" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="text" class="form-control" name="newVenueOwner" placeholder="Business owner..." value="@businessOwner" required>
+                                        <input type="text" class="form-control input" name="newVenueOwner" placeholder="Business owner..." value="@businessOwner" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="text" class="form-control" name="newVenueAddress" id="newVenueAddress" placeholder="Business address..." value="@businessAddress" required>
+                                        <input type="text" class="form-control input" name="newVenueAddress" id="newVenueAddress" placeholder="Business address..." value="@businessAddress" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="tel" class="form-control" name="newVenuePhone" placeholder="Business phone number..." value="@businessNumber" pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
+                                        <input type="tel" class="form-control input" name="newVenuePhone" placeholder="Business phone number..." value="@businessNumber" pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
                                     </div>
 
-                                    <div class="form-group">
-                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    <div class="row d-flex justify-content-center">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <button type="submit" class="btn button">Update</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -204,19 +208,23 @@
 
                                 <form method="post" action="">
                                     <div class="form-group">
-                                        <input type="password" class="form-control" name="oldPassword" placeholder="Current password..." id="oldPassword" required>
+                                        <input type="password" class="form-control input" name="oldPassword" placeholder="Current password..." id="oldPassword" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="password" class="form-control" name="newPassword" placeholder="New password..." id="newPassword" required>
+                                        <input type="password" class="form-control input" name="newPassword" placeholder="New password..." id="newPassword" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="password" class="form-control" name="newPassword2" placeholder="Confirm password..." id="newPassword2" oninput="matchPassword(this)" required>
+                                        <input type="password" class="form-control input" name="newPassword2" placeholder="Confirm password..." id="newPassword2" oninput="matchPassword(this)" required>
                                     </div>
 
-                                    <div class="form-group">
-                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    <div class="row d-flex justify-content-center">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <button type="submit" class="btn button">Update</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -229,15 +237,19 @@
 
                                 <form method="post" action="">
                                     <div class="form-group">
-                                        <input type="email" class="form-control" name="newEmail" placeholder="Email..." value="@email" required>
+                                        <input type="email" class="form-control input" name="newEmail" placeholder="Email..." value="@email" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="tel" class="form-control" name="newPhone" placeholder="Contact number..." value="@phone" pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
+                                        <input type="tel" class="form-control input" name="newPhone" placeholder="Contact number..." value="@phone" pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
                                     </div>
 
-                                    <div class="form-group">
-                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    <div class="row d-flex justify-content-center">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <button type="submit" class="btn button">Update</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
