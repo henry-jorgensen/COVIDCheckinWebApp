@@ -154,7 +154,8 @@
 
 
             SqlCommand userSearch = new SqlCommand("SELECT u.firstName, u.lastName, u.phoneNumber, cl.dateLog, u.uniqueId FROM Users as u join CheckinLogs as cl on u.ID = cl.uniqueId join Venue as v on cl.venueId = v.venueId " +
-                                                    "WHERE DAY(dateLog) = @0 AND MONTH(dateLog) = @1 AND YEAR(dateLog) = @2 and v.venueName LIKE @3", db);
+                                                    "WHERE DAY(dateLog) = @0 AND MONTH(dateLog) = @1 AND YEAR(dateLog) = @2 and v.venueName LIKE @3 " +
+                                                    "ORDER BY cl.dateLog DESC", db);
 
             userSearch.Parameters.AddWithValue("@0", theDay);
             userSearch.Parameters.AddWithValue("@1", theMonth);
