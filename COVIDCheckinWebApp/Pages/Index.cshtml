@@ -149,111 +149,113 @@
         @{
             if (Request.Cookies["venueId"] != null)
             {
-                <div class="card text-center">
-                    <div class="card-header">
-                        <ul class="nav nav-tabs card-header-tabs">
-                            <li class="nav-item">
-                                <div class="nav-link">Venue ID: @Request.Cookies["venueId"]</div>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(String.IsNullOrEmpty(Request.Query["e"]) ? "active" : "")" href="index">Account Details</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(Request.Query["e"] == "venue" ? "active" : "")" href="?e=venue">Venue Details</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(Request.Query["e"] == "password" ? "active" : "")" href="?e=password">Password</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="card-body">
-                        @if (Request.Query["e"] == "venue")
-                        {
-                            //Update venue details
-                            <div class="col">
-                                <h5 class="card-title">Update Venue Details</h5>
+                <div class="row d-flex justify-content-center">
+                    <div class="card text-center" style="width: 900px">
+                        <div class="card-header">
+                            <ul class="nav nav-tabs card-header-tabs">
+                                <li class="nav-item">
+                                    <div class="nav-link">Venue ID: @Request.Cookies["venueId"]</div>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(String.IsNullOrEmpty(Request.Query["e"]) ? "active" : "")" href="index">Account Details</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(Request.Query["e"] == "venue" ? "active" : "")" href="?e=venue">Venue Details</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(Request.Query["e"] == "password" ? "active" : "")" href="?e=password">Password</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            @if (Request.Query["e"] == "venue")
+                            {
+                                //Update venue details
+                                <div class="col">
+                                    <h5 class="card-title">Update Venue Details</h5>
 
-                                <form method="post" action="">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control input" name="newVenueName" placeholder="Business name..." value="@businessName" required>
-                                    </div>
+                                    <form method="post" action="">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control input" name="newVenueName" placeholder="Business name..." value="@businessName" required>
+                                        </div>
 
-                                    <div class="form-group">
-                                        <input type="text" class="form-control input" name="newVenueOwner" placeholder="Business owner..." value="@businessOwner" required>
-                                    </div>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control input" name="newVenueOwner" placeholder="Business owner..." value="@businessOwner" required>
+                                        </div>
 
-                                    <div class="form-group">
-                                        <input type="text" class="form-control input" name="newVenueAddress" id="newVenueAddress" placeholder="Business address..." value="@businessAddress" required>
-                                    </div>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control input" name="newVenueAddress" id="newVenueAddress" placeholder="Business address..." value="@businessAddress" required>
+                                        </div>
 
-                                    <div class="form-group">
-                                        <input type="tel" class="form-control input" name="newVenuePhone" placeholder="Business phone number..." value="@businessNumber" pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
-                                    </div>
+                                        <div class="form-group">
+                                            <input type="tel" class="form-control input" name="newVenuePhone" placeholder="Business phone number..." value="@businessNumber" pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
+                                        </div>
 
-                                    <div class="row d-flex justify-content-center">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <button type="submit" class="btn button">Update</button>
+                                        <div class="row d-flex justify-content-center">
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <button type="submit" class="btn button">Update</button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </form>
-                            </div>
-                        }
-                        else if (Request.Query["e"] == "password")
-                        {
-                            //Update password details
-                            <div class="col">
-                                <h5 class="card-title">Update Password</h5>
+                                    </form>
+                                </div>
+                            }
+                            else if (Request.Query["e"] == "password")
+                            {
+                                //Update password details
+                                <div class="col">
+                                    <h5 class="card-title">Update Password</h5>
 
-                                <form method="post" action="">
-                                    <div class="form-group">
-                                        <input type="password" class="form-control input" name="oldPassword" placeholder="Current password..." id="oldPassword" required>
-                                    </div>
+                                    <form method="post" action="">
+                                        <div class="form-group">
+                                            <input type="password" class="form-control input" name="oldPassword" placeholder="Current password..." id="oldPassword" required>
+                                        </div>
 
-                                    <div class="form-group">
-                                        <input type="password" class="form-control input" name="newPassword" placeholder="New password..." id="newPassword" required>
-                                    </div>
+                                        <div class="form-group">
+                                            <input type="password" class="form-control input" name="newPassword" placeholder="New password..." id="newPassword" required>
+                                        </div>
 
-                                    <div class="form-group">
-                                        <input type="password" class="form-control input" name="newPassword2" placeholder="Confirm password..." id="newPassword2" oninput="matchPassword(this)" required>
-                                    </div>
+                                        <div class="form-group">
+                                            <input type="password" class="form-control input" name="newPassword2" placeholder="Confirm password..." id="newPassword2" oninput="matchPassword(this)" required>
+                                        </div>
 
-                                    <div class="row d-flex justify-content-center">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <button type="submit" class="btn button">Update</button>
+                                        <div class="row d-flex justify-content-center">
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <button type="submit" class="btn button">Update</button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </form>
-                            </div>
-                        }
-                        else
-                        {
-                            //Update account details
-                            <div class="col">
-                                <h5 class="card-title">Update Account Details</h5>
+                                    </form>
+                                </div>
+                            }
+                            else
+                            {
+                                //Update account details
+                                <div class="col">
+                                    <h5 class="card-title">Update Account Details</h5>
 
-                                <form method="post" action="">
-                                    <div class="form-group">
-                                        <input type="email" class="form-control input" name="newEmail" placeholder="Email..." value="@email" required>
-                                    </div>
+                                    <form method="post" action="">
+                                        <div class="form-group">
+                                            <input type="email" class="form-control input" name="newEmail" placeholder="Email..." value="@email" required>
+                                        </div>
 
-                                    <div class="form-group">
-                                        <input type="tel" class="form-control input" name="newPhone" placeholder="Contact number..." value="@phone" pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
-                                    </div>
+                                        <div class="form-group">
+                                            <input type="tel" class="form-control input" name="newPhone" placeholder="Contact number..." value="@phone" pattern="^\d{10}$" oninvalid="this.setCustomValidity('Enter a valid phone number.')" oninput="this.setCustomValidity('')" required autocomplete="tel">
+                                        </div>
 
-                                    <div class="row d-flex justify-content-center">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <button type="submit" class="btn button">Update</button>
+                                        <div class="row d-flex justify-content-center">
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <button type="submit" class="btn button">Update</button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </form>
-                            </div>
-                        }
+                                    </form>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
             }

@@ -95,8 +95,12 @@ h5, .h5 {
 }
 
 .floating-navbar {
-    margin: 20px;
+    width: 100%;
+    display: inherit;
+    padding: 12px 0 10px 20px;
     border-radius: 10px;
+    background: #4285F4;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 }
 
 .card {
