@@ -26,6 +26,8 @@
     List<CustomerDetail> customers = new List<CustomerDetail>();
     List<VenueDetail> venues = new List<VenueDetail>();
 
+    bool dualSearch = false;
+
     db.Open();
 
     //Filling the venue dropdown list with the venues
@@ -150,12 +152,29 @@
 
 
 
-            SqlCommand userSearch = new SqlCommand("SELECT * FROM Users as u join CheckinLogs as cl on u.ID = cl.uniqueId " +
-                                                    "WHERE DAY(dateLog) = @0 AND MONTH(dateLog) = @1 AND YEAR(dateLog) = @2", db);
+            SqlCommand userSearch = new SqlCommand("SELECT u.firstName, u.lastName, u.phoneNumber, cl.dateLog, u.uniqueId FROM Users as u join CheckinLogs as cl on u.ID = cl.uniqueId join Venue as v on cl.venueId = v.venueId " +
+                                                    "WHERE DAY(dateLog) = @0 AND MONTH(dateLog) = @1 AND YEAR(dateLog) = @2 and v.venueName LIKE @3", db);
 
             userSearch.Parameters.AddWithValue("@0", theDay);
             userSearch.Parameters.AddWithValue("@1", theMonth);
             userSearch.Parameters.AddWithValue("@2", theYear);
+            userSearch.Parameters.AddWithValue("@3", formVenueValue);
+
+            var theUserReader = userSearch.ExecuteReader();
+
+            while (theUserReader.Read())
+            {
+                string firstName = theUserReader.GetString(0);
+                string lastName = theUserReader.GetString(1);
+                string phoneNumber = theUserReader.GetString(2);
+                DateTime logDate = theUserReader.GetDateTime(3);
+                string uniqueId = theUserReader.GetString(4);
+                customers.Add(new CustomerDetail { firstName = firstName, lastName = lastName, phoneNumber = phoneNumber, logDate = logDate, uniqueId = uniqueId });
+            }
+
+            theUserReader.Close();
+
+            dualSearch = true;
         }
 
     }
@@ -165,6 +184,12 @@
 
 }
 
+
+<div class="text-center">
+    <div class="display-4 border border-warning rounded p-3 mb-2 bg-warning text-dark align-content-center">
+        <h2>Covid Tracing Reports</h2>
+    </div>
+</div>
 
 <form method="post" class="row">
     <div class="col-4">
@@ -193,7 +218,7 @@
 @if (venues.Count() > 0)
 {
     <h1>@userSearchName</h1>
-    <table class="table table-hover table-striped">
+    <table class="table table-hover table-striped form-control">
         <thead>
             <tr>
                 <th scope="col">Venue Name</th>
@@ -203,9 +228,10 @@
                 <th scope="col">Log Date</th>
             </tr>
         </thead>
-        <tbody>
-            @foreach (var venue in venues)
-            {
+
+        @foreach (var venue in venues)
+        {
+            <tbody>
                 <tr>
                     <td>
                         @venue.venueName
@@ -223,13 +249,14 @@
                         @venue.logDate
                     </td>
                 </tr>
-            }
-        </tbody>
+            </tbody>
+        }
+
     </table>
 }
 
 
-@if (customers.Count() > 0)
+@if (customers.Count() > 0 && dualSearch == false)
 {
 
     <h1>@formVenueValue</h1>
@@ -248,6 +275,9 @@
 
                 <tr>
                     <td>
+                        @customer.uniqueId
+                    </td>
+                    <td>
                         @customer.firstName
                     </td>
                     <td>
@@ -265,20 +295,43 @@
     </table>
 }
 
-@if (customers.Count() > 0 && venues.Count() > 0)
+@if (customers.Count() > 0 && dualSearch == true)
 {
-    <table>
+    <h2>Other Customers at: @formVenueValue on same day as @formUserValue</h2>
+
+    <table class="table table-hover table-striped">
         <thead>
             <tr>
+                <th scope="col">Unique ID</th>
                 <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">Phone Number</th>
+                <th scope="col">Log Date</th>
             </tr>
         </thead>
-        <tbody>
-            <tr>
-                <td>
-                </td>
-            </tr>
-        </tbody>
+        @foreach (var customer in customers)
+        {
+            <tbody>
+                <tr>
+                    <td>
+                        @customer.uniqueId
+                    </td>
+                    <td>
+                        @customer.firstName
+                    </td>
+                    <td>
+                        @customer.lastName
+                    </td>
+                    <td>
+                        @customer.phoneNumber
+                    </td>
+                    <td>
+                        @customer.logDate
+                    </td>
+                </tr>
+            </tbody>
+        }
+
     </table>
 }
 
