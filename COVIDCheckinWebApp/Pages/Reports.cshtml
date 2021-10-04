@@ -25,7 +25,7 @@
     //Initialising results lists
     List<CustomerDetail> customers = new List<CustomerDetail>();
     List<VenueDetail> venues = new List<VenueDetail>();
-    
+
     db.Open();
 
     //Filling the venue dropdown list with the venues
@@ -42,7 +42,7 @@
     readerVenue.Close();
 
 
-    //Filling the user dropdown list with users 
+    //Filling the user dropdown list with users
     SqlCommand userDropdown = new SqlCommand("SELECT firstName, LastName, uniqueId FROM Users", db);
     SqlDataReader readerUser = userDropdown.ExecuteReader();
 
@@ -122,6 +122,40 @@
             }
 
             resultsReader.Close();
+        }
+
+        if (formVenueValue != "" && formUserValue != "")
+        {
+            SqlCommand dateSearch = new SqlCommand("SELECT TOP 1 DAY(dateLog) as theDay, MONTH(dateLog) as theMonth, YEAR(dateLog) as theYear " +
+                                                    "FROM Users as u join CheckinLogs as cl on u.ID = cl.uniqueId join Venue as v on cl.venueId = v.venueId " +
+                                                    "WHERE v.venueName LIKE @0 and u.uniqueId = @1", db);
+
+            dateSearch.Parameters.AddWithValue("@0", formVenueValue);
+            dateSearch.Parameters.AddWithValue("@1", formUserValue);
+
+            var theDateReader = dateSearch.ExecuteReader();
+
+            int theYear = 0;
+            int theMonth = 0;
+            int theDay = 0;
+
+            while (theDateReader.Read())
+            {
+                theDay = theDateReader.GetInt32(0);
+                theMonth = theDateReader.GetInt32(1);
+                theYear = theDateReader.GetInt32(2);
+            }
+
+            theDateReader.Close();
+
+
+
+            SqlCommand userSearch = new SqlCommand("SELECT * FROM Users as u join CheckinLogs as cl on u.ID = cl.uniqueId " +
+                                                    "WHERE DAY(dateLog) = @0 AND MONTH(dateLog) = @1 AND YEAR(dateLog) = @2", db);
+
+            userSearch.Parameters.AddWithValue("@0", theDay);
+            userSearch.Parameters.AddWithValue("@1", theMonth);
+            userSearch.Parameters.AddWithValue("@2", theYear);
         }
 
     }
@@ -227,6 +261,23 @@
                     </td>
                 </tr>
             }
+        </tbody>
+    </table>
+}
+
+@if (customers.Count() > 0 && venues.Count() > 0)
+{
+    <table>
+        <thead>
+            <tr>
+                <th scope="col">First Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                </td>
+            </tr>
         </tbody>
     </table>
 }
