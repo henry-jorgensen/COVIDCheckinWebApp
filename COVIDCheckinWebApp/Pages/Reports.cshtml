@@ -187,156 +187,166 @@
 }
 
 
-<div class="text-center">
-    <div class="display-4 border border-warning rounded p-3 mb-2 bg-warning text-dark align-content-center">
-        <h2>Covid Tracing Reports</h2>
+<div class="container">
+    <main role="main" class="pb-3">
+        <br /><br /><br />
+
+        <div class="card">
+            <div class="card-header">
+                <form method="post" class="row">
+                    <div class="col-4">
+                        <input list="userSearch" name="userValue" class="form-control" placeholder="Enter name..." />
+                        <datalist id="userSearch">
+                            @foreach (var user in dropdownListUsers)
+                            {
+                                <option value="@user.uniqueId">@user.firstName @user.lastName @user.</option>
+                            }
+                        </datalist>
+                    </div>
+                    <div class="col-4">
+                        <input type="date" class="form-control" format="dd-mm-yyyy" />
+                    </div>
+                    <div class="col-4">
+                        <button type="submit" class="btn btn-outline-primary">Affected Users</button>
+                        <button type="submit" class="btn btn-outline-primary">Affected Venues</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </main>
     </div>
-</div>
 
-<form method="post" class="row">
-    <div class="col-4">
-        <input list="venueSearch" name="venueValue" class="form-control" placeholder="Enter venue name..." />
-        <datalist id="venueSearch">
-            @foreach (var venue in dropdownListVenues)
-            {
-                <option value="@venue.venueName">@venue.venueId</option>
-            }
-        </datalist>
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+        </div>
+
+        @if (venues.Count() > 0)
+        {
+            <h1>@userSearchName</h1>
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Venue Name</th>
+                        <th scope="col">Venue Address</th>
+                        <th scope="col">Venue Phone Number</th>
+                        <th scope="col">Owner Name</th>
+                        <th scope="col">Log Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var venue in venues)
+                    {
+
+                        <tr>
+                            <td>
+                                @venue.venueName
+                            </td>
+                            <td>
+                                @venue.venueAddress
+                            </td>
+                            <td>
+                                @venue.venuePhone
+                            </td>
+                            <td>
+                                @venue.ownerName
+                            </td>
+                            <td>
+                                @venue.logDate
+                            </td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+        }
+
+
+        @if (customers.Count() > 0 && dualSearch == false)
+        {
+
+            <h1>@formVenueValue</h1>
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Unique ID</th>
+                        <th scope="col">First Name</th>
+                        <th scope="col">Last Name</th>
+                        <th scope="col">Phone Number</th>
+                        <th scope="col">Log Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var customer in customers)
+                    {
+
+                        <tr>
+                            <td>
+                                @customer.uniqueId
+                            </td>
+                            <td>
+                                @customer.firstName
+                            </td>
+                            <td>
+                                @customer.lastName
+                            </td>
+                            <td>
+                                @customer.phoneNumber
+                            </td>
+                            <td>
+                                @customer.logDate
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        else if (customers.Count() > 0 && dualSearch == true)
+        {
+            <h2>Other Customers at: @formVenueValue on same day as @formUserValue</h2>
+
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Unique ID</th>
+                        <th scope="col">First Name</th>
+                        <th scope="col">Last Name</th>
+                        <th scope="col">Phone Number</th>
+                        <th scope="col">Log Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var customer in customers)
+                    {
+
+                        <tr>
+                            <td>
+                                @customer.uniqueId
+                            </td>
+                            <td>
+                                @customer.firstName
+                            </td>
+                            <td>
+                                @customer.lastName
+                            </td>
+                            <td>
+                                @customer.phoneNumber
+                            </td>
+                            <td>
+                                @customer.logDate
+                            </td>
+                        </tr>
+
+                    }
+                </tbody>
+
+            </table>
+        }
+        else
+        {
+            <div class="text-center"><i>No results to show...</div>
+        }
     </div>
-    <div class="col-4">
-        <input list="userSearch" name="userValue" class="form-control" placeholder="Enter name..." />
-        <datalist id="userSearch">
-            @foreach (var user in dropdownListUsers)
-            {
-                <option value="@user.uniqueId">@user.firstName @user.lastName</option>
-            }
-        </datalist>
     </div>
-    <div class="col-4">
-        <button type="submit" class="btn btn-outline-primary">Search</button>
-    </div>
-</form>
-
-@if (venues.Count() > 0)
-{
-    <h1>@userSearchName</h1>
-    <table class="table table-hover table-striped">
-        <thead>
-            <tr>
-                <th scope="col">Venue Name</th>
-                <th scope="col">Venue Address</th>
-                <th scope="col">Venue Phone Number</th>
-                <th scope="col">Owner Name</th>
-                <th scope="col">Log Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var venue in venues)
-            {
-
-                <tr>
-                    <td>
-                        @venue.venueName
-                    </td>
-                    <td>
-                        @venue.venueAddress
-                    </td>
-                    <td>
-                        @venue.venuePhone
-                    </td>
-                    <td>
-                        @venue.ownerName
-                    </td>
-                    <td>
-                        @venue.logDate
-                    </td>
-                </tr>
-
-            }
-        </tbody>
-    </table>
-}
-
-
-@if (customers.Count() > 0 && dualSearch == false)
-{
-
-    <h1>@formVenueValue</h1>
-    <table class="table table-hover table-striped">
-        <thead>
-            <tr>
-                <th scope="col">Unique ID</th>
-                <th scope="col">First Name</th>
-                <th scope="col">Last Name</th>
-                <th scope="col">Phone Number</th>
-                <th scope="col">Log Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var customer in customers)
-            {
-
-                <tr>
-                    <td>
-                        @customer.uniqueId
-                    </td>
-                    <td>
-                        @customer.firstName
-                    </td>
-                    <td>
-                        @customer.lastName
-                    </td>
-                    <td>
-                        @customer.phoneNumber
-                    </td>
-                    <td>
-                        @customer.logDate
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-
-@if (customers.Count() > 0 && dualSearch == true)
-{
-    <h2>Other Customers at: @formVenueValue on same day as @formUserValue</h2>
-
-    <table class="table table-hover table-striped">
-        <thead>
-            <tr>
-                <th scope="col">Unique ID</th>
-                <th scope="col">First Name</th>
-                <th scope="col">Last Name</th>
-                <th scope="col">Phone Number</th>
-                <th scope="col">Log Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var customer in customers)
-            {
-
-                <tr>
-                    <td>
-                        @customer.uniqueId
-                    </td>
-                    <td>
-                        @customer.firstName
-                    </td>
-                    <td>
-                        @customer.lastName
-                    </td>
-                    <td>
-                        @customer.phoneNumber
-                    </td>
-                    <td>
-                        @customer.logDate
-                    </td>
-                </tr>
-
-            }
-        </tbody>
-
-    </table>
-}
-
