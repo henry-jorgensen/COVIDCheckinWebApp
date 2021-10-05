@@ -11,7 +11,8 @@ namespace COVIDCheckinWebApp.Models
         public string venueName { get; set; }
         public string venueAddress { get; set; }
         public string venuePhone { get; set; }
-        public string ownerName { get; set; }
+        public string venueOwner { get; set; }
+        public string ownerPhone { get; set; }
         public DateTime logDate { get; set; }
 
     }

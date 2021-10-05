@@ -74,7 +74,7 @@
         //Runs SQL query that grabs venue data when a user is inputted into the report search, which returns the list of venues the user has checked into
         if (formVenueValue == "")
         {
-            SqlCommand dataSearch = new SqlCommand("SELECT v.venueName, v.venueAddress, v.venuePhone, v.ownerPhone, cl.dateLog, u.firstName, u.lastName " +
+            SqlCommand dataSearch = new SqlCommand("SELECT v.venueName, v.venueAddress, v.venuePhone, v.ownerPhone, cl.dateLog, u.firstName, u.lastName, v.venueOwner " +
                                                    "FROM Users AS u JOIN CheckinLogs AS cl ON u.ID = cl.uniqueId JOIN Venue AS v ON v.venueId = cl.venueId " +
                                                    "WHERE u.uniqueId = @0 ORDER BY dateLog DESC", db);
 
@@ -89,10 +89,11 @@
                 string venueName = resultsReader.GetString(0);
                 string venueAddress = resultsReader.GetString(1);
                 string venuePhone = resultsReader.GetString(2);
-                string ownerName = resultsReader.GetString(3);
+                string ownerPhone = resultsReader.GetString(3);
                 DateTime logDate = resultsReader.GetDateTime(4);
                 userSearchName = resultsReader.GetString(5) + " " + resultsReader.GetString(6);
-                venues.Add(new VenueDetail { venueName = venueName, venueAddress = venueAddress, venuePhone = venuePhone, ownerName = ownerName, logDate = logDate });
+                string venueOwner = resultsReader.GetString(7);
+                venues.Add(new VenueDetail { venueName = venueName, venueAddress = venueAddress, venuePhone = venuePhone, ownerPhone = ownerPhone, logDate = logDate, venueOwner = venueOwner });
 
             }
 
@@ -226,6 +227,7 @@
                 <th scope="col">Venue Name</th>
                 <th scope="col">Venue Address</th>
                 <th scope="col">Venue Phone Number</th>
+                <th scope="col">Owner Phone Number</th>
                 <th scope="col">Owner Name</th>
                 <th scope="col">Log Date</th>
             </tr>
@@ -245,7 +247,10 @@
                         @venue.venuePhone
                     </td>
                     <td>
-                        @venue.ownerName
+                        @venue.ownerPhone
+                    </td>
+                    <td>
+                        @venue.venueOwner
                     </td>
                     <td>
                         @venue.logDate
