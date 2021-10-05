@@ -20,14 +20,14 @@
                         <!--Manual checkin area-->
                         <div class="col-sm-6">
                             <form method="post" id="checkinForm" action="" autocomplete="off">
-                                <h5 class="card-title">Check-in with your Unique ID</h5>
+                                <h5 class="card-title">Generate QR with your Unique ID</h5>
                                 <div class="form-group">
                                     <input type="text" class="form-control input" name="username" id="unique" oninput="disableManual(this.value)" minlength="4" maxlength="100" placeholder="Unique Identifier" required>
 
                                 </div>
                                 <hr />
 
-                                <h5 class="card-title">Check-in manually</h5>
+                                <h5 class="card-title">Generate QR with your personal info</h5>
                                 <div class="form-group">
                                     <input type="text" class="form-control input" name="firstName" id="firstname" oninput="disableUnique(this.value)" minlength="2" maxlength="100" placeholder="First name" required>
                                 </div>
@@ -42,7 +42,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <button type="submit" id="checkinSubmit" class="btn button" onsubmit="">Check-in</button>
+                                    <button type="submit" id="checkinSubmit" class="btn button" onsubmit="">Generate Now</button>
                                 </div>
                             </form>
                         </div>
