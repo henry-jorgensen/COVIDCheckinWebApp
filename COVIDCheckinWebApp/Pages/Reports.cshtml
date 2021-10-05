@@ -172,38 +172,40 @@
             <table class="table table-hover table-striped">
                 <thead>
                     <tr>
+                        <th scope="col">Affected Person</th>
+                        <th scope="col">Affected Person Phone</th>
                         <th scope="col">Venue Name</th>
                         <th scope="col">Venue Address</th>
                         <th scope="col">Venue Phone Number</th>
                         <th scope="col">Log Date</th>
-                        <th scope="col">Affected Person</th>
-                        <th scope="col">Affected Person Phone</th>
+
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var venue in venuesWithPerson)
                     {
 
-                        <tr>
-                            <td>
-                                @venue.venueName
-                            </td>
-                            <td>
-                                @venue.venueAddress
-                            </td>
-                            <td>
-                                @venue.venuePhone
-                            </td>
-                            <td>
-                                @venue.logDate
-                            </td>
-                            <td>
-                                @venue.personAffected.firstName @venue.personAffected.lastName
-                            </td>
-                            <td>
-                                @venue.personAffected.phoneNumber
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>
+                            @venue.personAffected.firstName @venue.personAffected.lastName
+                        </td>
+                        <td>
+                            @venue.personAffected.phoneNumber
+                        </td>
+                        <td>
+                            @venue.venueName
+                        </td>
+                        <td>
+                            @venue.venueAddress
+                        </td>
+                        <td>
+                            @venue.venuePhone
+                        </td>
+                        <td>
+                            @venue.logDate
+                        </td>
+
+                    </tr>
 
                     }
                 </tbody>
