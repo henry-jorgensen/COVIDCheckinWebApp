@@ -19,30 +19,14 @@
 
 
     //Initialising dropdown lists
-    List<VenueDetail> dropdownListVenues = new List<VenueDetail>();
     List<CustomerDetail> dropdownListUsers = new List<CustomerDetail>();
 
     //Initialising results lists
-    List<CustomerDetail> customers = new List<CustomerDetail>();
+    List<VenueDetail> venuesWithPerson = new List<VenueDetail>();
     List<VenueDetail> venues = new List<VenueDetail>();
 
-    bool dualSearch = false;
 
     db.Open();
-
-    //Filling the venue dropdown list with the venues
-    SqlCommand venueDropdown = new SqlCommand("SELECT venueName, venueId FROM Venue", db);
-    SqlDataReader readerVenue = venueDropdown.ExecuteReader();
-
-    while (readerVenue.Read())
-    {
-        string venuename = readerVenue.GetString(0);
-        int venueId = readerVenue.GetInt32(1);
-        dropdownListVenues.Add(new VenueDetail() { venueName = venuename, venueId = venueId });
-    }
-
-    readerVenue.Close();
-
 
     //Filling the user dropdown list with users
     SqlCommand userDropdown = new SqlCommand("SELECT firstName, LastName, uniqueId FROM Users", db);
@@ -61,30 +45,34 @@
 
     //Establishing variables for form values
     var formUserValue = "";
-    var userSearchName = "";
     var searchType = "";
-
-
+    var searchDateString = "";
 
     //Post method that runs necessary queries to grab report data
     if (Request.Method == "POST")
     {
         formUserValue = Request.Form["userValue"];
         searchType = Request.Form["queryType"];
-        var searchDateString = Request.Form["theDate"];
-
-        var searchDate = DateTime.Parse(searchDateString);
+        searchDateString = Request.Form["theDate"];
 
 
         //Runs SQL query that grabs venue data when a user is inputted into the report search, which returns the list of venues the user has checked into
-        if (searchType == "venueSearch")
+        if (searchType == "userSearch")
         {
-            SqlCommand dataSearch = new SqlCommand("SELECT v.venueName, v.venueAddress FROM Venue as v JOIN CheckinLogs as cl on v.venueId = cl.venueId " +
-                                                   "JOIN Users as u on cl.uniqueId = u.ID WHERE cl.venueId IN (SELECT venueId FROM CheckinLogs WHERE u.uniqueId = @0 " +
-                                                   "AND dateLog >= @1", db);
+            SqlCommand idSearch = new SqlCommand("SELECT ID FROM Users WHERE uniqueId = @0", db);
 
-            dataSearch.Parameters.AddWithValue("@0", formUserValue);
-            dataSearch.Parameters.AddWithValue("@1", searchDate);
+            idSearch.Parameters.AddWithValue("@0", formUserValue);
+
+            var usersId = idSearch.ExecuteScalar();
+
+            Debug.WriteLine("ID RETURNED " + usersId);
+
+            SqlCommand dataSearch = new SqlCommand("SELECT v.venueName, v.venueAddress, v.venuePhone, v.venueOwner, cl.dateLog, u.firstName, u.lastName, u.phoneNumber FROM Venue as v JOIN CheckinLogs as cl on v.venueId = cl.venueId " +
+                                                   "JOIN Users as u on cl.uniqueId = u.ID WHERE cl.venueId IN (SELECT venueId FROM CheckinLogs WHERE uniqueId = @0 " +
+                                                   "AND dateLog >= CONVERT(datetime, '" + searchDateString + "')) AND cl.dateLog >= CONVERT(datetime, '" + searchDateString + "')", db);
+
+            dataSearch.Parameters.AddWithValue("@0", usersId);
+            //dataSearch.Parameters.AddWithValue("@1", "'" + searchDateString + "'");
 
             SqlDataReader resultsReader = dataSearch.ExecuteReader();
 
@@ -97,8 +85,11 @@
                 string venuePhone = resultsReader.GetString(2);
                 string ownerName = resultsReader.GetString(3);
                 DateTime logDate = resultsReader.GetDateTime(4);
-                userSearchName = resultsReader.GetString(5) + " " + resultsReader.GetString(6);
-                venues.Add(new VenueDetail { venueName = venueName, venueAddress = venueAddress, venuePhone = venuePhone, ownerName = ownerName, logDate = logDate });
+                string firstName = resultsReader.GetString(5);
+                string lastName = resultsReader.GetString(6);
+                string phoneNumber = resultsReader.GetString(7);
+                CustomerDetail affectedPerson = new CustomerDetail {firstName = firstName, lastName = lastName, phoneNumber = phoneNumber };
+                venuesWithPerson.Add(new VenueDetail { venueName = venueName, venueAddress = venueAddress, venuePhone = venuePhone, ownerName = ownerName, logDate = logDate, personAffected = affectedPerson });
 
             }
 
@@ -107,13 +98,12 @@
 
 
         //Runs SQL query that grabs venue data when a venue is inputted into the report search, which returns the list of users that have checked into that venue
-        if (formUserValue == "as")
+        if (searchType == "venueSearch")
         {
-            SqlCommand dataSearch = new SqlCommand("SELECT u.firstName, u.lastName, u.phoneNumber, cl.dateLog, u.uniqueId " +
-                                                   "FROM Users AS u JOIN CheckinLogs AS cl ON u.ID = cl.uniqueId JOIN Venue AS v ON v.venueId = cl.venueId " +
-                                                   "WHERE v.venueName LIKE @0 ORDER BY dateLog DESC", db);
+            SqlCommand dataSearch = new SqlCommand("SELECT v.venueName, v.venueAddress, v.venuePhone, v.venueOwner, cl.dateLog, v.ownerPhone FROM Venue as v JOIN CheckinLogs as cl on v.venueId = cl.venueId " +
+                                                   "JOIN Users as u on cl.uniqueId = u.ID WHERE u.uniqueId LIKE @0 and cl.dateLog >= CONVERT(datetime, '" + searchDateString + "')", db);
 
-            dataSearch.Parameters.AddWithValue("@0", 1);
+            dataSearch.Parameters.AddWithValue("@0", formUserValue);
 
             SqlDataReader resultsReader = dataSearch.ExecuteReader();
 
@@ -121,69 +111,20 @@
             //While loop that goes through every row returned from the query and adds it to the list
             while (resultsReader.Read())
             {
-                string firstName = resultsReader.GetString(0);
-                string lastName = resultsReader.GetString(1);
-                string phoneNumber = resultsReader.GetString(2);
-                DateTime logDate = resultsReader.GetDateTime(3);
-                string uniqueId = resultsReader.GetString(4);
-                customers.Add(new CustomerDetail { firstName = firstName, lastName = lastName, phoneNumber = phoneNumber, logDate = logDate, uniqueId = uniqueId });
+                string venueName = resultsReader.GetString(0);
+                string venueAddress = resultsReader.GetString(1);
+                string venuePhone = resultsReader.GetString(2);
+                string ownerName = resultsReader.GetString(3);
+                DateTime logDate = resultsReader.GetDateTime(4);
+                string ownerPhone = resultsReader.GetString(5);
+                venues.Add(new VenueDetail { venueName = venueName, venueAddress = venueAddress, venuePhone = venuePhone, ownerName = ownerName, logDate = logDate, ownerPhone = ownerPhone });
 
             }
 
             resultsReader.Close();
         }
 
-        if (searchType != "as" && formUserValue != "")
-        {
-            SqlCommand dateSearch = new SqlCommand("SELECT TOP 1 DAY(dateLog) as theDay, MONTH(dateLog) as theMonth, YEAR(dateLog) as theYear " +
-                                                    "FROM Users as u join CheckinLogs as cl on u.ID = cl.uniqueId join Venue as v on cl.venueId = v.venueId " +
-                                                    "WHERE v.venueName LIKE @0 and u.uniqueId = @1", db);
 
-            dateSearch.Parameters.AddWithValue("@0", 1);
-            dateSearch.Parameters.AddWithValue("@1", formUserValue);
-
-            var theDateReader = dateSearch.ExecuteReader();
-
-            int theYear = 0;
-            int theMonth = 0;
-            int theDay = 0;
-
-            while (theDateReader.Read())
-            {
-                theDay = theDateReader.GetInt32(0);
-                theMonth = theDateReader.GetInt32(1);
-                theYear = theDateReader.GetInt32(2);
-            }
-
-            theDateReader.Close();
-
-
-
-            SqlCommand userSearch = new SqlCommand("SELECT u.firstName, u.lastName, u.phoneNumber, cl.dateLog, u.uniqueId FROM Users as u join CheckinLogs as cl on u.ID = cl.uniqueId join Venue as v on cl.venueId = v.venueId " +
-                                                    "WHERE DAY(dateLog) = @0 AND MONTH(dateLog) = @1 AND YEAR(dateLog) = @2 and v.venueName LIKE @3 " +
-                                                    "ORDER BY cl.dateLog DESC", db);
-
-            userSearch.Parameters.AddWithValue("@0", theDay);
-            userSearch.Parameters.AddWithValue("@1", theMonth);
-            userSearch.Parameters.AddWithValue("@2", theYear);
-            userSearch.Parameters.AddWithValue("@3", 1);
-
-            var theUserReader = userSearch.ExecuteReader();
-
-            while (theUserReader.Read())
-            {
-                string firstName = theUserReader.GetString(0);
-                string lastName = theUserReader.GetString(1);
-                string phoneNumber = theUserReader.GetString(2);
-                DateTime logDate = theUserReader.GetDateTime(3);
-                string uniqueId = theUserReader.GetString(4);
-                customers.Add(new CustomerDetail { firstName = firstName, lastName = lastName, phoneNumber = phoneNumber, logDate = logDate, uniqueId = uniqueId });
-            }
-
-            theUserReader.Close();
-
-            dualSearch = true;
-        }
 
     }
 
@@ -200,7 +141,7 @@
             <div class="card-header">
                 <form method="post" class="row">
                     <div class="col-4">
-                        <input list="userSearch" name="userValue" class="form-control" placeholder="Enter name..." />
+                        <input list="userSearch" name="userValue" class="form-control" placeholder="Enter name..." required />
                         <datalist id="userSearch">
                             @foreach (var user in dropdownListUsers)
                             {
@@ -209,7 +150,7 @@
                         </datalist>
                     </div>
                     <div class="col-4">
-                        <input type="date" class="form-control" name="theDate" format="dd-mm-yyyy" />
+                        <input type="date" class="form-control" name="theDate" format="dd-mm-yyyy" required />
                     </div>
                     <div class="col-4">
                         <button type="submit" class="btn btn-outline-primary" onclick="clickButtonUser()">Affected Users</button>
@@ -228,17 +169,65 @@
         <div class="card-header">
         </div>
 
-        @if (venues.Count() > 0)
+        @if (venuesWithPerson.Count() > 0)
         {
-            <h1>@userSearchName</h1>
+            <h1>Users affected by @formUserValue after: @searchDateString</h1>
             <table class="table table-hover table-striped">
                 <thead>
                     <tr>
                         <th scope="col">Venue Name</th>
                         <th scope="col">Venue Address</th>
                         <th scope="col">Venue Phone Number</th>
-                        <th scope="col">Owner Name</th>
                         <th scope="col">Log Date</th>
+                        <th scope="col">Affected Person</th>
+                        <th scope="col">Affected Person Phone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var venue in venuesWithPerson)
+                    {
+
+                        <tr>
+                            <td>
+                                @venue.venueName
+                            </td>
+                            <td>
+                                @venue.venueAddress
+                            </td>
+                            <td>
+                                @venue.venuePhone
+                            </td>
+                            <td>
+                                @venue.logDate
+                            </td>
+                            <td>
+                                @venue.personAffected.firstName @venue.personAffected.lastName
+                            </td>
+                            <td>
+                                @venue.personAffected.phoneNumber
+                            </td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+        }
+
+
+        @if (venues.Count() > 0)
+        {
+
+            <h1>Venues affected by @formUserValue after: @searchDateString</h1>
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Venue Name</th>
+                        <th scope="col">Venue Address</th>
+                        <th scope="col">Venue Phone Number</th>
+                        <th scope="col">Venue Owner</th>
+                        <th scope="col">Venue Owner Phone</th>
+                        <th scope="col">Log Date</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -259,101 +248,18 @@
                                 @venue.ownerName
                             </td>
                             <td>
+                                @venue.ownerPhone
+                            </td>
+                            <td>
                                 @venue.logDate
                             </td>
                         </tr>
-
                     }
                 </tbody>
             </table>
         }
 
 
-        @if (customers.Count() > 0 && dualSearch == false)
-        {
-
-            <h1></h1>
-            <table class="table table-hover table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">Unique ID</th>
-                        <th scope="col">First Name</th>
-                        <th scope="col">Last Name</th>
-                        <th scope="col">Phone Number</th>
-                        <th scope="col">Log Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var customer in customers)
-                    {
-
-                        <tr>
-                            <td>
-                                @customer.uniqueId
-                            </td>
-                            <td>
-                                @customer.firstName
-                            </td>
-                            <td>
-                                @customer.lastName
-                            </td>
-                            <td>
-                                @customer.phoneNumber
-                            </td>
-                            <td>
-                                @customer.logDate
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-
-        else if (customers.Count() > 0 && dualSearch == true)
-        {
-            <h2>Other Customers at:  on same day as @formUserValue</h2>
-
-            <table class="table table-hover table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">Unique ID</th>
-                        <th scope="col">First Name</th>
-                        <th scope="col">Last Name</th>
-                        <th scope="col">Phone Number</th>
-                        <th scope="col">Log Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var customer in customers)
-                    {
-
-                        <tr>
-                            <td>
-                                @customer.uniqueId
-                            </td>
-                            <td>
-                                @customer.firstName
-                            </td>
-                            <td>
-                                @customer.lastName
-                            </td>
-                            <td>
-                                @customer.phoneNumber
-                            </td>
-                            <td>
-                                @customer.logDate
-                            </td>
-                        </tr>
-
-                    }
-                </tbody>
-
-            </table>
-        }
-        else
-        {
-            <div class="text-center"><i>No results to show...</div>
-        }
     </div>
 </div>
 
