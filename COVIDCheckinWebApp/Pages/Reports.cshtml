@@ -56,7 +56,7 @@
         searchDateString = Request.Form["theDate"];
 
 
-        //Runs SQL query that grabs venue data when a user is inputted into the report search, which returns the list of venues the user has checked into
+        //Runs SQL query that grabs venue and user data when the user button is clicked, it returns a list with affected users and what venue they were at
         if (searchType == "userSearch")
         {
             SqlCommand idSearch = new SqlCommand("SELECT ID FROM Users WHERE uniqueId = @0", db);
@@ -72,7 +72,6 @@
                                                    "AND dateLog >= CONVERT(datetime, '" + searchDateString + "')) AND cl.dateLog >= CONVERT(datetime, '" + searchDateString + "')", db);
 
             dataSearch.Parameters.AddWithValue("@0", usersId);
-            //dataSearch.Parameters.AddWithValue("@1", "'" + searchDateString + "'");
 
             SqlDataReader resultsReader = dataSearch.ExecuteReader();
 
@@ -97,7 +96,7 @@
         }
 
 
-        //Runs SQL query that grabs venue data when a venue is inputted into the report search, which returns the list of users that have checked into that venue
+        //Runs SQL query that grabs venue data when the venue button is clicked and returns venues that the person inputted has been to after the inputted date value
         if (searchType == "venueSearch")
         {
             SqlCommand dataSearch = new SqlCommand("SELECT v.venueName, v.venueAddress, v.venuePhone, v.venueOwner, cl.dateLog, v.ownerPhone FROM Venue as v JOIN CheckinLogs as cl on v.venueId = cl.venueId " +
@@ -123,8 +122,6 @@
 
             resultsReader.Close();
         }
-
-
 
     }
 
