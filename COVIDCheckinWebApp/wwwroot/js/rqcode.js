@@ -18,10 +18,10 @@ $("#checkinForm").submit(function (e) {
 
     // Determine URL for POST based on Checkin method.
     if ($('#unique').val()) {
-        var url = "api/Checkin/Unique"
+        var url = "api/QrCodeGeneration/Unique"
     }
     else {
-        var url = "api/Checkin/Manual"
+        var url = "api/QrCodeGeneration/Manual"
     }
 
     // AJAX Request
@@ -35,9 +35,9 @@ $("#checkinForm").submit(function (e) {
 
             let html = '<h5 class="card-title">unique id:<span style="color:Orange">' + resp + '</span> </h5>'
             html += '<!--startprint-->'
-            html += '<img class="img-thumbnail qrimg" src="/api/Checkin/QrCode?text=' + resp + '" />';
+            html += '<img class="img-thumbnail qrimg" src="/api/QrCodeGeneration/QrCode?text=' + resp + '" />';
             html += '<!--endprint-->'
-            html += '<div class="text-center"><a class="btn btn-primary" href="javascript:doPrint(\'' + resp +  '\')">print</a>  <a class="btn btn-primary" href="/api/Checkin/SaveQrCode?text=' + resp + '">save</a></div>'
+            html += '<div class="text-center"><a class="btn btn-primary" href="javascript:doPrint(\'' + resp +  '\')">print</a>  <a class="btn btn-primary" href="/api/QrCodeGeneration/SaveQrCode?text=' + resp + '">save</a></div>'
 
             $(".QrCodeImg").html(html)
 
@@ -77,7 +77,7 @@ function doPrint(resp) {
     ////eprnstr = "<!--endprint-->";
     ////prnhtml = bdhtml.substr(bdhtml.indexOf(sprnstr) + 17);
     ////prnhtml = prnhtml.substring(0, prnhtml.indexOf(eprnstr));
-    window.document.body.innerHTML = '<img width="100%" src="/api/Checkin/QrCode?text=' + resp + '" />';
+    window.document.body.innerHTML = '<img width="100%" src="/api/QrCodeGeneration/QrCode?text=' + resp + '" />';
     window.print();
 
     setTimeout(function () {
