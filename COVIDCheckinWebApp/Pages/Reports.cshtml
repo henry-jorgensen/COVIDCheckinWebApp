@@ -60,25 +60,31 @@
 
 
     //Establishing variables for form values
-    var formVenueValue = "";
     var formUserValue = "";
     var userSearchName = "";
+    var searchType = "";
+
 
 
     //Post method that runs necessary queries to grab report data
     if (Request.Method == "POST")
     {
-        formVenueValue = Request.Form["venueValue"];
         formUserValue = Request.Form["userValue"];
+        searchType = Request.Form["queryType"];
+        var searchDateString = Request.Form["theDate"];
+
+        var searchDate = DateTime.Parse(searchDateString);
+
 
         //Runs SQL query that grabs venue data when a user is inputted into the report search, which returns the list of venues the user has checked into
-        if (formVenueValue == "")
+        if (searchType == "venueSearch")
         {
-            SqlCommand dataSearch = new SqlCommand("SELECT v.venueName, v.venueAddress, v.venuePhone, v.ownerPhone, cl.dateLog, u.firstName, u.lastName " +
-                                                   "FROM Users AS u JOIN CheckinLogs AS cl ON u.ID = cl.uniqueId JOIN Venue AS v ON v.venueId = cl.venueId " +
-                                                   "WHERE u.uniqueId = @0 ORDER BY dateLog DESC", db);
+            SqlCommand dataSearch = new SqlCommand("SELECT v.venueName, v.venueAddress FROM Venue as v JOIN CheckinLogs as cl on v.venueId = cl.venueId " +
+                                                   "JOIN Users as u on cl.uniqueId = u.ID WHERE cl.venueId IN (SELECT venueId FROM CheckinLogs WHERE u.uniqueId = @0 " +
+                                                   "AND dateLog >= @1", db);
 
             dataSearch.Parameters.AddWithValue("@0", formUserValue);
+            dataSearch.Parameters.AddWithValue("@1", searchDate);
 
             SqlDataReader resultsReader = dataSearch.ExecuteReader();
 
@@ -101,13 +107,13 @@
 
 
         //Runs SQL query that grabs venue data when a venue is inputted into the report search, which returns the list of users that have checked into that venue
-        if (formUserValue == "")
+        if (formUserValue == "as")
         {
             SqlCommand dataSearch = new SqlCommand("SELECT u.firstName, u.lastName, u.phoneNumber, cl.dateLog, u.uniqueId " +
                                                    "FROM Users AS u JOIN CheckinLogs AS cl ON u.ID = cl.uniqueId JOIN Venue AS v ON v.venueId = cl.venueId " +
                                                    "WHERE v.venueName LIKE @0 ORDER BY dateLog DESC", db);
 
-            dataSearch.Parameters.AddWithValue("@0", formVenueValue);
+            dataSearch.Parameters.AddWithValue("@0", 1);
 
             SqlDataReader resultsReader = dataSearch.ExecuteReader();
 
@@ -127,13 +133,13 @@
             resultsReader.Close();
         }
 
-        if (formVenueValue != "" && formUserValue != "")
+        if (searchType != "as" && formUserValue != "")
         {
             SqlCommand dateSearch = new SqlCommand("SELECT TOP 1 DAY(dateLog) as theDay, MONTH(dateLog) as theMonth, YEAR(dateLog) as theYear " +
                                                     "FROM Users as u join CheckinLogs as cl on u.ID = cl.uniqueId join Venue as v on cl.venueId = v.venueId " +
                                                     "WHERE v.venueName LIKE @0 and u.uniqueId = @1", db);
 
-            dateSearch.Parameters.AddWithValue("@0", formVenueValue);
+            dateSearch.Parameters.AddWithValue("@0", 1);
             dateSearch.Parameters.AddWithValue("@1", formUserValue);
 
             var theDateReader = dateSearch.ExecuteReader();
@@ -160,7 +166,7 @@
             userSearch.Parameters.AddWithValue("@0", theDay);
             userSearch.Parameters.AddWithValue("@1", theMonth);
             userSearch.Parameters.AddWithValue("@2", theYear);
-            userSearch.Parameters.AddWithValue("@3", formVenueValue);
+            userSearch.Parameters.AddWithValue("@3", 1);
 
             var theUserReader = userSearch.ExecuteReader();
 
@@ -186,7 +192,6 @@
 
 }
 
-
 <div class="container">
     <main role="main" class="pb-3">
         <br /><br /><br />
@@ -204,18 +209,19 @@
                         </datalist>
                     </div>
                     <div class="col-4">
-                        <input type="date" class="form-control" format="dd-mm-yyyy" />
+                        <input type="date" class="form-control" name="theDate" format="dd-mm-yyyy" />
                     </div>
                     <div class="col-4">
-                        <button type="submit" class="btn btn-outline-primary">Affected Users</button>
-                        <button type="submit" class="btn btn-outline-primary">Affected Venues</button>
+                        <button type="submit" class="btn btn-outline-primary" onclick="clickButtonUser()">Affected Users</button>
+                        <button type="submit" class="btn btn-outline-primary" onclick="clickButtonVenue()">Affected Venues</button>
+                        <input type="text" id="queryType" name="queryType" hidden />
                     </div>
 
                 </form>
             </div>
         </div>
     </main>
-    </div>
+</div>
 
 <div class="container">
     <div class="card">
@@ -266,7 +272,7 @@
         @if (customers.Count() > 0 && dualSearch == false)
         {
 
-            <h1>@formVenueValue</h1>
+            <h1></h1>
             <table class="table table-hover table-striped">
                 <thead>
                     <tr>
@@ -305,7 +311,7 @@
 
         else if (customers.Count() > 0 && dualSearch == true)
         {
-            <h2>Other Customers at: @formVenueValue on same day as @formUserValue</h2>
+            <h2>Other Customers at:  on same day as @formUserValue</h2>
 
             <table class="table table-hover table-striped">
                 <thead>
@@ -349,4 +355,17 @@
             <div class="text-center"><i>No results to show...</div>
         }
     </div>
-    </div>
+</div>
+
+<script>
+    function clickButtonUser() {
+        var input = document.getElementById('queryType');
+        input.value = 'userSearch';
+    }
+
+    function clickButtonVenue() {
+        var input = document.getElementById('queryType');
+        input.value = 'venueSearch';
+    }
+
+</script>
