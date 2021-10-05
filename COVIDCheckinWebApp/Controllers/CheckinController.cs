@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using COVIDCheckinWebApp.Code;
 using Microsoft.AspNetCore.Mvc;
+using QRCoder;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -11,13 +16,14 @@ namespace COVIDCheckinWebApp.Controllers
     {
         internal string connectionString()
         {
-            return "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
+            return ReadConfig.ReadConnection("projectstudiodb");
+            //return "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
         }
 
         // GET: /api/Checkin/
         public IActionResult Index()
         {
-        return Content("API for Checkin submission. Please use api/Checkin/<action> (Manual/Unique)");
+            return Content("API for Checkin submission. Please use api/Checkin/<action> (Manual/Unique)");
         }
 
         // POST: api/Checkin/manual/
@@ -161,11 +167,52 @@ namespace COVIDCheckinWebApp.Controllers
                 db.Close();
                 return Content(uName);
             }
-        else
+            else
             {
                 return StatusCode(500);
             }
 
+        }
+
+        // GET: /api/Checkin/QrCode?text=1234
+        public IActionResult QrCode(string text)
+        {
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
+            Bitmap qrCodeImage = qrCode.GetGraphic(20);
+
+            byte[] bytes = new byte[0];
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                qrCodeImage.Save(ms, ImageFormat.Png);
+                bytes = ms.ToArray();
+            }
+
+            return new FileStreamResult(new MemoryStream(bytes), "image/png");
+        }
+
+        // GET: /api/Checkin/SaveQrCode?text=1234
+        public IActionResult SaveQrCode(string text)
+        {
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
+            Bitmap qrCodeImage = qrCode.GetGraphic(20);
+
+            byte[] bytes = new byte[0];
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                qrCodeImage.Save(ms, ImageFormat.Png);
+                bytes = ms.ToArray();
+            }
+
+            return new FileStreamResult(new MemoryStream(bytes), "application/zip")
+            {
+                FileDownloadName = "qrcode.png"
+            };
         }
     }
 }

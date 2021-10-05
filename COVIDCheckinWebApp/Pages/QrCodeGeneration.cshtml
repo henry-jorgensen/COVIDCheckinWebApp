@@ -1,12 +1,10 @@
 ﻿@page
 @{
     Layout = "_Layout";
-    ViewData["Title"] = "Checkin";
+    ViewData["Title"] = "QrCode Generation";
 }
 
-<script src="/js/html5-qrcode.min.js"></script>
 
-<body>
     <div class="container h-100">
         <div class="row align-items-center justify-content-center h-100">
             <div class="card">
@@ -14,8 +12,9 @@
                     <div class="row d-flex justify-content-left">
                         <!--QR Code checkin area-->
                         <div class="col-sm-6 border-right">
-                            <h5 class="card-title">Check-in with your QR code</h5>
-                            <div class="camera-field" id="reader"></div>
+                            @*<h5 class="card-title">QrCode Generation</h5>*@
+                            <div class="QrCodeImg"></div>
+
                         </div>
 
                         <!--Manual checkin area-->
@@ -53,7 +52,7 @@
         </div>
     </div>
 
-    <!--Successful manual checkin-->
+    @*Successful manual checkin*@
     <div class="modal fade" id="manualSuccessful" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -72,7 +71,7 @@
         </div>
     </div>
 
-    <!--Successful UID checkin-->
+    @*Successful UID checkin*@
     <div class="modal fade" id="uniqueSuccessful" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -88,7 +87,7 @@
         </div>
     </div>
 
-    <!--Unsuccessful manual checkin-->
+    @*Unsuccessful manual checkin*@
     <div class="modal fade" id="manualFailure" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -104,7 +103,7 @@
         </div>
     </div>
 
-    <!--Unsuccessful UID checkin-->
+    @*Unsuccessful UID checkin*@
     <div class="modal fade" id="uniqueFailure" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -119,9 +118,10 @@
             </div>
         </div>
     </div>
-</body>
 
-<script src="/js/html5-qrcode.min.js"></script>
-@*<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>*@
-<script src="~/lib/jquery/dist/jquery.js"></script>
-<script src="/js/checkin.js"></script>
+@section Scripts{
+    @*<script src="/js/html5-qrcode.min.js"></script>*@
+<script src="~/js/jquery.jqprint-0.3.js"></script>
+    <script src="~/js/rqcode.js"></script>
+}
+

@@ -14,7 +14,8 @@
     }
 
     //Establishing connection to database
-    String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
+    //String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
+    string connectionString = COVIDCheckinWebApp.Code.ReadConfig.ReadConnection("projectstudiodb");
     SqlConnection db = new SqlConnection(connectionString);
 
 
@@ -230,10 +231,10 @@
                 <th scope="col">Log Date</th>
             </tr>
         </thead>
-        <tbody>
-            @foreach (var venue in venues)
-            {
 
+        @foreach (var venue in venues)
+        {
+            <tbody>
                 <tr>
                     <td>
                         @venue.venueName
@@ -251,9 +252,9 @@
                         @venue.logDate
                     </td>
                 </tr>
+            </tbody>
+        }
 
-            }
-        </tbody>
     </table>
 }
 
@@ -312,10 +313,9 @@
                 <th scope="col">Log Date</th>
             </tr>
         </thead>
-        <tbody>
-            @foreach (var customer in customers)
-            {
-
+        @foreach (var customer in customers)
+        {
+            <tbody>
                 <tr>
                     <td>
                         @customer.uniqueId
@@ -333,9 +333,8 @@
                         @customer.logDate
                     </td>
                 </tr>
-
-            }
-        </tbody>
+            </tbody>
+        }
 
     </table>
 }

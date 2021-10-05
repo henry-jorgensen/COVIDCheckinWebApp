@@ -14,7 +14,8 @@
 
     ViewData["Title"] = "Login";
 
-    String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
+    string connectionString = COVIDCheckinWebApp.Code.ReadConfig.ReadConnection("projectstudiodb");
+    //String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
     SqlConnection db = new SqlConnection(connectionString);
 
     bool invalidPassword = false;

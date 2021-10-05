@@ -13,7 +13,8 @@
         Response.Redirect("Index");
     }
 
-    String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
+    string connectionString = COVIDCheckinWebApp.Code.ReadConfig.ReadConnection("projectstudiodb");
+    //String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
     SqlConnection db = new SqlConnection(connectionString);
 
     var email = "";
@@ -162,20 +163,16 @@
 </div>
 
 <script language='javascript' type='text/javascript'>
-    function matchPassword(password)
-    {
-        if (password.value != document.getElementById('password').value)
-        {
+    function matchPassword(password) {
+        if (password.value != document.getElementById('password').value) {
             password.setCustomValidity('Passwords must match.');
         }
-        else
-        {
+        else {
             password.setCustomValidity('');
         }
     }
 
-    function initialize()
-    {
+    function initialize() {
         var input = document.getElementById('businessaddress');
         new google.maps.places.Autocomplete(input);
     }

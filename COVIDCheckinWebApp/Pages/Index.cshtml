@@ -16,11 +16,12 @@
     var businessNumber = "";
     var venueIdString = "";
 
-    if (Request.Cookies["venueId"] != null) 
+    if (Request.Cookies["venueId"] != null)
     {
         venueIdString = Request.Cookies["venueId"];
 
-        String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
+        string connectionString = COVIDCheckinWebApp.Code.ReadConfig.ReadConnection("projectstudiodb");
+        //String connectionString = "Server=tcp:amnotdaniel.duckdns.org,1433;Initial Catalog=projectstudio;Persist Security Info=False;User ID=sa;Password=ProjectStudio1;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=30;";
         SqlConnection db = new SqlConnection(connectionString);
 
         SqlCommand checkExisting = new SqlCommand("SELECT ownerEmail, ownerPhone, ownerPassword, venueName, venueOwner, venueAddress, venuePhone FROM Venue WHERE venueId = @0", db);
@@ -111,7 +112,7 @@
             newPassword = Request.Form["newPassword"];
             newPassword2 = Request.Form["newPassword2"];
 
-            if (oldPassword != "" && newPassword != "" && oldPassword != newPassword && newPassword==newPassword2 && Encrypt(oldPassword) == password)
+            if (oldPassword != "" && newPassword != "" && oldPassword != newPassword && newPassword == newPassword2 && Encrypt(oldPassword) == password)
             {
                 SqlCommand update = new SqlCommand("UPDATE Venue SET ownerPassword=@0 WHERE venueId = @2", db);
                 update.Parameters.AddWithValue("@0", Encrypt(newPassword));
@@ -267,7 +268,7 @@
 
 <script language='javascript' type='text/javascript'>
     function matchPassword(password) {
-    if (password.value != document.getElementById('newPassword').value) {
+        if (password.value != document.getElementById('newPassword').value) {
             password.setCustomValidity('Passwords must match.');
         }
         else {
