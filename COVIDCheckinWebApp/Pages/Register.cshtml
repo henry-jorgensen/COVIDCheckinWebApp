@@ -55,7 +55,7 @@
         }
         else
         {
-            SqlCommand insert = new SqlCommand("INSERT [Venue] ([ownerEmail], [ownerPhone], [ownerPassword], [venueName], [venueOwner], [venueAddress], [venuePhone])" +
+            SqlCommand insert = new SqlCommand("INSERT [Venue] ([ownerEmail], [ownerPhone], [ownerPassword], [venueName], [venueOwner], [venueAddress], [venuePhone], [permissions])" +
             "VALUES(@0, @1, @2, @3, @4, @5, @6, @7)", db);
             insert.Parameters.AddWithValue("@0", email);
             insert.Parameters.AddWithValue("@1", phone);
