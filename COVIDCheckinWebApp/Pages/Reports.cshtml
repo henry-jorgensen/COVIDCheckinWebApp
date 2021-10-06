@@ -70,7 +70,7 @@
 
             SqlCommand dataSearch = new SqlCommand("SELECT v.venueName, v.venueAddress, v.venuePhone, v.venueOwner, cl.dateLog, u.firstName, u.lastName, u.phoneNumber FROM Venue as v JOIN CheckinLogs as cl on v.venueId = cl.venueId " +
                                                    "JOIN Users as u on cl.uniqueId = u.ID WHERE cl.venueId IN (SELECT venueId FROM CheckinLogs WHERE uniqueId = @0 " +
-                                                   "AND dateLog >= CONVERT(datetime, '" + searchDateString + "')) AND cl.dateLog >= CONVERT(datetime, '" + searchDateString + "')", db);
+                                                   "AND dateLog >= CONVERT(datetime, '" + searchDateString + "')) AND cl.dateLog >= CONVERT(datetime, '" + searchDateString + "') AND NOT cl.uniqueId = @0", db);
 
             dataSearch.Parameters.AddWithValue("@0", usersId);
 
@@ -88,7 +88,7 @@
                 string firstName = resultsReader.GetString(5);
                 string lastName = resultsReader.GetString(6);
                 string phoneNumber = resultsReader.GetString(7);
-                CustomerDetail affectedPerson = new CustomerDetail {firstName = firstName, lastName = lastName, phoneNumber = phoneNumber };
+                CustomerDetail affectedPerson = new CustomerDetail { firstName = firstName, lastName = lastName, phoneNumber = phoneNumber };
                 venuesWithPerson.Add(new VenueDetail { venueName = venueName, venueAddress = venueAddress, venuePhone = venuePhone, ownerName = ownerName, logDate = logDate, personAffected = affectedPerson });
 
             }
@@ -147,7 +147,7 @@
                         <datalist id="userSearch">
                             @foreach (var user in dropdownListUsers)
                             {
-                                <option value="@user.uniqueId">@user.firstName @user.lastName @user.</option>
+                                <option value="@user.uniqueId">@user.firstName @user.lastName @user.phoneNumber</option>
                             }
                         </datalist>
                     </div>
@@ -159,7 +159,6 @@
                         <button type="submit" class="btn btn-outline-primary" onclick="clickButtonVenue()">Affected Venues</button>
                         <input type="text" id="queryType" name="queryType" hidden />
                     </div>
-
                 </form>
             </div>
         </div>
@@ -190,27 +189,27 @@
                     @foreach (var venue in venuesWithPerson)
                     {
 
-                    <tr>
-                        <td>
-                            @venue.personAffected.firstName @venue.personAffected.lastName
-                        </td>
-                        <td>
-                            @venue.personAffected.phoneNumber
-                        </td>
-                        <td>
-                            @venue.venueName
-                        </td>
-                        <td>
-                            @venue.venueAddress
-                        </td>
-                        <td>
-                            @venue.venuePhone
-                        </td>
-                        <td>
-                            @venue.logDate
-                        </td>
+                        <tr>
+                            <td>
+                                @venue.personAffected.firstName @venue.personAffected.lastName
+                            </td>
+                            <td>
+                                @venue.personAffected.phoneNumber
+                            </td>
+                            <td>
+                                @venue.venueName
+                            </td>
+                            <td>
+                                @venue.venueAddress
+                            </td>
+                            <td>
+                                @venue.venuePhone
+                            </td>
+                            <td>
+                                @venue.logDate
+                            </td>
 
-                    </tr>
+                        </tr>
 
                     }
                 </tbody>
