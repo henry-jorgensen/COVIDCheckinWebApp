@@ -2,6 +2,12 @@
 @{
     Layout = "_Layout";
     ViewData["Title"] = "QrCode Generation";
+
+    if (Request.Cookies["venueId"] == null)
+    {
+        //Redirect to index if we are logged in
+        Response.Redirect("Login");
+    }
 }
 
 

@@ -2,6 +2,12 @@
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Checkin";
+
+    if (Request.Cookies["venueId"] == null)
+    {
+        //Redirect to index if we are logged in
+        Response.Redirect("Login");
+    }
 }
 
 <script src="/js/html5-qrcode.min.js"></script>

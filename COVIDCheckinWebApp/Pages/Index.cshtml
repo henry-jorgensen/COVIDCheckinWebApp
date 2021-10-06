@@ -16,6 +16,12 @@
     var businessNumber = "";
     var venueIdString = "";
 
+    if (Request.Cookies["venueId"] == null)
+    {
+        //Redirect to index if we are logged in
+        Response.Redirect("Login");
+    }
+
     if (Request.Cookies["venueId"] != null)
     {
         venueIdString = Request.Cookies["venueId"];
