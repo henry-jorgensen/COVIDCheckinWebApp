@@ -47,7 +47,6 @@
     var formUserValue = "";
     var searchType = "";
     var searchDateString = "";
-    bool searchBool = false;
 
     //Post method that runs necessary queries to grab report data
     if (Request.Method == "POST")
@@ -93,8 +92,6 @@
 
             }
 
-            searchBool = true;
-
             resultsReader.Close();
         }
 
@@ -124,8 +121,6 @@
             }
 
             resultsReader.Close();
-
-            searchBool = true;
         }
 
     }
