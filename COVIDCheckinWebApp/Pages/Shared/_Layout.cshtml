@@ -11,7 +11,7 @@
 <body>
     <header>
         @{
-            if (ViewData["Title"].ToString() != "Checkin")
+            if (ViewData["Title"].ToString() != "Checkin" || ViewData["Title"].ToString() != "QrCode Generation")
             {
                 <nav class="navbar navbar-dark navbar-expand-lg">
                     <div class="floating-navbar">
