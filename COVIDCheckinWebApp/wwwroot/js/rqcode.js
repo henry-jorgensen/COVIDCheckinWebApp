@@ -44,7 +44,7 @@ $("#checkinForm").submit(function (e) {
         },
         error: function (resp) {
             $("#checkinForm").trigger('reset');
-            $('#uniqueFailure').modal('show');
+            $('#qrFailure').modal('show');
             document.getElementById("firstname").disabled = false;
             document.getElementById("lastname").disabled = false;
             document.getElementById("contact").disabled = false;

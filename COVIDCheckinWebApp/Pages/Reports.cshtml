@@ -168,12 +168,12 @@
 
 <div class="container">
     <div class="card">
-        <div class="card-header">
-        </div>
 
         @if (venuesWithPerson.Count() > 0)
         {
-            <h1>Users affected by @formUserValue after: @searchDateString</h1>
+            <div class="card-header">
+                <i>Users affected by @formUserValue after: @searchDateString
+            </div>
             <table class="table table-hover table-striped">
                 <thead>
                     <tr>
@@ -218,10 +218,11 @@
         }
 
 
-        @if (venues.Count() > 0)
+        else if (venues.Count() > 0)
         {
-
-            <h1>Venues affected by @formUserValue after: @searchDateString</h1>
+            <div class="card-header">
+                <i>Venues affected by @formUserValue after: @searchDateString
+            </div>
             <table class="table table-hover table-striped">
                 <thead>
                     <tr>
@@ -262,9 +263,15 @@
                 </tbody>
             </table>
         }
+        else
+        {
+            <div class="card-header">
+            </div>
+            <div class="text-center"><i>There are currently no results to display....</div> 
+        }
 
     </div>
-</div>
+        </div>
 
 <script>
     function clickButtonUser() {
