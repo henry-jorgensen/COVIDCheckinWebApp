@@ -7,6 +7,11 @@
     Layout = "_Layout";
     ViewData["Title"] = "Reports";
 
+    if (Request.Cookies["permission"] != "1")
+    {
+        Response.Redirect("Index");
+    }
+
     if (Request.Cookies["venueId"] == null)
     {
         //Redirect to index if we are logged in

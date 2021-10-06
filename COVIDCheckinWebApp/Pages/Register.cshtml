@@ -2,6 +2,7 @@
 @using System.Text;
 @using System.Data.SqlClient;
 @using System.Security.Cryptography;
+@using Microsoft.AspNetCore.Http;
 
 @{
     Layout = "_Layout";
@@ -55,7 +56,7 @@
         else
         {
             SqlCommand insert = new SqlCommand("INSERT [Venue] ([ownerEmail], [ownerPhone], [ownerPassword], [venueName], [venueOwner], [venueAddress], [venuePhone])" +
-            "VALUES(@0, @1, @2, @3, @4, @5, @6)", db);
+            "VALUES(@0, @1, @2, @3, @4, @5, @6, @7)", db);
             insert.Parameters.AddWithValue("@0", email);
             insert.Parameters.AddWithValue("@1", phone);
             insert.Parameters.AddWithValue("@2", password);
@@ -63,6 +64,7 @@
             insert.Parameters.AddWithValue("@4", businessOwner);
             insert.Parameters.AddWithValue("@5", businessAddress);
             insert.Parameters.AddWithValue("@6", businessNumber);
+            insert.Parameters.AddWithValue("@7", '0');
 
             insert.ExecuteNonQuery();
 
@@ -78,6 +80,7 @@
         //Store venueID in cookies to signify we are logged in
         Response.Cookies.Append("venueId", venueIdString);
         Response.Cookies.Append("venueName", businessName);
+        Response.Cookies.Append("permission", "0");
 
         //Redirect back to Index when successfully registered
         Response.Redirect("Index");
@@ -162,8 +165,7 @@
     </main>
 </div>
 
-<script language='javascript' type='text/javascript'>
-    function matchPassword(password) {
+<script language='javascript' type='text/javascript'>function matchPassword(password) {
         if (password.value != document.getElementById('password').value) {
             password.setCustomValidity('Passwords must match.');
         }
@@ -177,5 +179,4 @@
         new google.maps.places.Autocomplete(input);
     }
 
-    google.maps.event.addDomListener(window, 'load', initialize);
-</script>
+    google.maps.event.addDomListener(window, 'load', initialize);</script>

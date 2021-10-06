@@ -3,9 +3,15 @@
 @using System.Text;
 @using System.Data.SqlClient;
 @using System.Security.Cryptography;
+@using Microsoft.AspNetCore.Http;
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Home";
+
+    if (Request.Cookies["permission"] == "1")
+    {
+        Response.Redirect("Reports");
+    }
 
     var email = "";
     var phone = "";
@@ -272,8 +278,7 @@
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJG02FQOVVRvnAMzRdFvNo9QLLcBsNLIY&libraries=places&callback=initialize"></script>
 
-<script language='javascript' type='text/javascript'>
-    function matchPassword(password) {
+<script language='javascript' type='text/javascript'>function matchPassword(password) {
         if (password.value != document.getElementById('newPassword').value) {
             password.setCustomValidity('Passwords must match.');
         }
@@ -287,5 +292,4 @@
         new google.maps.places.Autocomplete(input);
     }
 
-    google.maps.event.addDomListener(window, 'load', initialize);
-</script>
+    google.maps.event.addDomListener(window, 'load', initialize);</script>

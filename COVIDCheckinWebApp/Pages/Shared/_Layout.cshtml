@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -19,33 +20,58 @@
                         </a>
                         <div class="collapse navbar-collapse" id="navbarNav">
                             <ul class="navbar-nav mr-auto">
-                                <li class="nav-item @(ViewData["Title"].ToString() == "Home" ? "active" : "")">
-                                    <a class="nav-link" href="index">Home <span class="sr-only">(current)</span></a>
-                                </li>
 
-                                <li class="nav-item @(ViewData["Title"].ToString() == "Login" ? "active" : "")">
-                                    <a class="nav-link" href="login">Login <span class="sr-only">(current)</span></a>
-                                </li>
+                                @if (Context.Request.Cookies["permission"] != "1")
+                                {
+                                    if (Context.Request.Cookies["venueId"] != null)
+                                    {
+                                         <li class="nav-item @(ViewData["Title"].ToString() == "Home" ? "active" : "")">
+                                            <a class="nav-link" href="index">Home <span class="sr-only">(current)</span></a>
+                                        </li>
+                                    }
+                                }
 
-                                <li class="nav-item @(ViewData["Title"].ToString() == "Register" ? "active" : "")">
-                                    <a class="nav-link" href="register">Register <span class="sr-only">(current)</span></a>
-                                </li>
+                                @if (Context.Request.Cookies["venueId"] == null)
+                                {
+                                    <li class="nav-item @(ViewData["Title"].ToString() == "Login" ? "active" : "")">
+                                        <a class="nav-link" href="login">Login <span class="sr-only">(current)</span></a>
+                                    </li>
+                                }
 
-                                <li class="nav-item @(ViewData["Title"].ToString() == "QrCode Generation" ? "active" : "")">
-                                    <a class="nav-link" href="QrCodeGeneration">QrCode Generation <span class="sr-only">(current)</span></a>
-                                </li>
+                                @if (Context.Request.Cookies["venueId"] == null)
+                                {
+                                    <li class="nav-item @(ViewData["Title"].ToString() == "Register" ? "active" : "")">
+                                        <a class="nav-link" href="register">Register <span class="sr-only">(current)</span></a>
+                                    </li>
+                                }
 
-                                <li class="nav-item @(ViewData["Title"].ToString() == "Checkin" ? "active" : "")">
-                                    <a class="nav-link" href="checkin">Checkin <span class="sr-only">(current)</span></a>
-                                </li>
+                                @if (Context.Request.Cookies["venueId"] != null)
+                                {
+                                    <li class="nav-item @(ViewData["Title"].ToString() == "QrCode Generation" ? "active" : "")">
+                                        <a class="nav-link" href="QrCodeGeneration">QrCode Generation <span class="sr-only">(current)</span></a>
+                                    </li>
+                                }
 
-                                <li class="nav-item @(ViewData["Title"].ToString() == "Reports" ? "active" : "")">
-                                    <a class="nav-link" href="reports">Reports <span class="sr-only">(current)</span></a>
-                                </li>
+                                @if (Context.Request.Cookies["venueId"] != null)
+                                {
+                                    <li class="nav-item @(ViewData["Title"].ToString() == "Checkin" ? "active" : "")">
+                                        <a class="nav-link" href="checkin">Checkin <span class="sr-only">(current)</span></a>
+                                    </li>
+                                }
 
-                                <li class="nav-item">
-                                    <a class="nav-link" href="logout">Logout <span class="sr-only">(current)</span></a>
-                                </li>
+                                @if (Context.Request.Cookies["venueId"] != null && Context.Request.Cookies["permission"] == "1")
+                                {
+                                    <li class="nav-item @(ViewData["Title"].ToString() == "Reports" ? "active" : "")">
+                                        <a class="nav-link" href="reports">Reports <span class="sr-only">(current)</span></a>
+                                    </li>
+                                }
+
+                                @if (Context.Request.Cookies["venueId"] != null)
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="logout">Logout <span class="sr-only">(current)</span></a>
+                                    </li>
+                                }
                             </ul>
                         </div>
                     </div>

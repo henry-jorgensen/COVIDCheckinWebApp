@@ -2,6 +2,7 @@
 @using System.Text;
 @using System.Data.SqlClient;
 @using System.Security.Cryptography;
+@using Microsoft.AspNetCore.Http;
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Login";
@@ -33,7 +34,7 @@
             email = email.ToUpper();
             password = Encrypt(Request.Form["password"]);
 
-            SqlCommand CHECKLOGIN = new SqlCommand("SELECT venueId, venueName FROM Venue WHERE ownerEmail = @0 AND ownerPassword = @1", db);
+            SqlCommand CHECKLOGIN = new SqlCommand("SELECT venueId, venueName, permissions FROM Venue WHERE ownerEmail = @0 AND ownerPassword = @1", db);
             CHECKLOGIN.Parameters.AddWithValue("@0", email);
             CHECKLOGIN.Parameters.AddWithValue("@1", password);
 
@@ -47,6 +48,7 @@
                     //Store venueID in cookies to signify we are logged in
                     Response.Cookies.Append("venueId", reader.GetValue(0).ToString());
                     Response.Cookies.Append("venueName", reader.GetString(1));
+                    Response.Cookies.Append("permission", reader.GetString(2));
 
                     //Redirect back to Index when successfully registered
                     Response.Redirect("Index");
@@ -91,7 +93,7 @@
                         <div class="card-body">
                             <h5 class="card-title">Login</h5>
                             <div class="form-group">
-                                <input type="email" class="form-control input" name="email" placeholder="@(invalidPassword==true ? "Incorrect email or Password" : "Email")" required>
+                                <input type="text" class="form-control input" name="email" placeholder="@(invalidPassword==true ? "Incorrect email or Password" : "Email")" required>
                             </div>
 
                             <div class="form-group">
