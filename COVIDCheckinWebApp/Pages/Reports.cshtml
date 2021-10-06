@@ -63,126 +63,42 @@
     var formVenueValue = "";
     var formUserValue = "";
     var userSearchName = "";
+    var searchDate = "";
 
-
-    //Post method that runs necessary queries to grab report data
     if (Request.Method == "POST")
     {
-        formVenueValue = Request.Form["venueValue"];
-        formUserValue = Request.Form["userValue"];
+        userSearchName = Request.Form["userValue"];
 
-        //Runs SQL query that grabs venue data when a user is inputted into the report search, which returns the list of venues the user has checked into
-        if (formVenueValue == "")
+        if (!String.IsNullOrWhiteSpace(Request.Form["searchDate"]))
         {
-            SqlCommand dataSearch = new SqlCommand("SELECT v.venueName, v.venueAddress, v.venuePhone, v.ownerPhone, cl.dateLog, u.firstName, u.lastName " +
-                                                   "FROM Users AS u JOIN CheckinLogs AS cl ON u.ID = cl.uniqueId JOIN Venue AS v ON v.venueId = cl.venueId " +
-                                                   "WHERE u.uniqueId = @0 ORDER BY dateLog DESC", db);
-
-            dataSearch.Parameters.AddWithValue("@0", formUserValue);
-
-            SqlDataReader resultsReader = dataSearch.ExecuteReader();
-
-
-            //while loop that goes through every row returned from the query and adds it to the list
-            while (resultsReader.Read())
-            {
-                string venueName = resultsReader.GetString(0);
-                string venueAddress = resultsReader.GetString(1);
-                string venuePhone = resultsReader.GetString(2);
-                string ownerName = resultsReader.GetString(3);
-                DateTime logDate = resultsReader.GetDateTime(4);
-                userSearchName = resultsReader.GetString(5) + " " + resultsReader.GetString(6);
-                venues.Add(new VenueDetail { venueName = venueName, venueAddress = venueAddress, venuePhone = venuePhone, ownerName = ownerName, logDate = logDate });
-
-            }
-
-            resultsReader.Close();
+            searchDate = Request.Form["searchDate"];
         }
 
-
-        //Runs SQL query that grabs venue data when a venue is inputted into the report search, which returns the list of users that have checked into that venue
-        if (formUserValue == "")
+        if (Request.Form["repType"] == "people")
         {
-            SqlCommand dataSearch = new SqlCommand("SELECT u.firstName, u.lastName, u.phoneNumber, cl.dateLog, u.uniqueId " +
-                                                   "FROM Users AS u JOIN CheckinLogs AS cl ON u.ID = cl.uniqueId JOIN Venue AS v ON v.venueId = cl.venueId " +
-                                                   "WHERE v.venueName LIKE @0 ORDER BY dateLog DESC", db);
+            SqlCommand userReport = new SqlCommand("select firstName, lastName, U.uniqueId, phoneNumber, dateLog, venueId from Users as U " +
+                "join CheckinLogs as CL on U.ID = CL.uniqueIdwhere venueId in " +
+                "(select venueId from CheckinLogs where uniqueId = @uID)", db);
 
-            dataSearch.Parameters.AddWithValue("@0", formVenueValue);
+            userReport.Parameters.AddWithValue("@uID", userSearchName);
 
-            SqlDataReader resultsReader = dataSearch.ExecuteReader();
+            SqlDataReader userReportData = userReport.ExecuteReader();
 
-
-            //While loop that goes through every row returned from the query and adds it to the list
-            while (resultsReader.Read())
+            while (userReportData.Read())
             {
-                string firstName = resultsReader.GetString(0);
-                string lastName = resultsReader.GetString(1);
-                string phoneNumber = resultsReader.GetString(2);
-                DateTime logDate = resultsReader.GetDateTime(3);
-                string uniqueId = resultsReader.GetString(4);
-                customers.Add(new CustomerDetail { firstName = firstName, lastName = lastName, phoneNumber = phoneNumber, logDate = logDate, uniqueId = uniqueId });
-
+                string fName = userReportData.GetString(0);
+                string lName = userReportData.GetString(1);
+                string uID = userReportData.GetString(2);
+                string phoneNum = userReportData.GetString(3);
+                DateTime dateLogged = userReportData.GetDateTime(4);
+                customers.Add(new CustomerDetail() { firstName = fName, lastName = lName, phoneNumber = phoneNum, logDate = dateLogged, uniqueId = uID });
             }
-
-            resultsReader.Close();
         }
-
-        if (formVenueValue != "" && formUserValue != "")
+        else
         {
-            SqlCommand dateSearch = new SqlCommand("SELECT TOP 1 DAY(dateLog) as theDay, MONTH(dateLog) as theMonth, YEAR(dateLog) as theYear " +
-                                                    "FROM Users as u join CheckinLogs as cl on u.ID = cl.uniqueId join Venue as v on cl.venueId = v.venueId " +
-                                                    "WHERE v.venueName LIKE @0 and u.uniqueId = @1", db);
 
-            dateSearch.Parameters.AddWithValue("@0", formVenueValue);
-            dateSearch.Parameters.AddWithValue("@1", formUserValue);
-
-            var theDateReader = dateSearch.ExecuteReader();
-
-            int theYear = 0;
-            int theMonth = 0;
-            int theDay = 0;
-
-            while (theDateReader.Read())
-            {
-                theDay = theDateReader.GetInt32(0);
-                theMonth = theDateReader.GetInt32(1);
-                theYear = theDateReader.GetInt32(2);
-            }
-
-            theDateReader.Close();
-
-
-
-            SqlCommand userSearch = new SqlCommand("SELECT u.firstName, u.lastName, u.phoneNumber, cl.dateLog, u.uniqueId FROM Users as u join CheckinLogs as cl on u.ID = cl.uniqueId join Venue as v on cl.venueId = v.venueId " +
-                                                    "WHERE DAY(dateLog) = @0 AND MONTH(dateLog) = @1 AND YEAR(dateLog) = @2 and v.venueName LIKE @3 " +
-                                                    "ORDER BY cl.dateLog DESC", db);
-
-            userSearch.Parameters.AddWithValue("@0", theDay);
-            userSearch.Parameters.AddWithValue("@1", theMonth);
-            userSearch.Parameters.AddWithValue("@2", theYear);
-            userSearch.Parameters.AddWithValue("@3", formVenueValue);
-
-            var theUserReader = userSearch.ExecuteReader();
-
-            while (theUserReader.Read())
-            {
-                string firstName = theUserReader.GetString(0);
-                string lastName = theUserReader.GetString(1);
-                string phoneNumber = theUserReader.GetString(2);
-                DateTime logDate = theUserReader.GetDateTime(3);
-                string uniqueId = theUserReader.GetString(4);
-                customers.Add(new CustomerDetail { firstName = firstName, lastName = lastName, phoneNumber = phoneNumber, logDate = logDate, uniqueId = uniqueId });
-            }
-
-            theUserReader.Close();
-
-            dualSearch = true;
         }
-
     }
-
-
-    db.Close();
 
 }
 
@@ -194,23 +110,27 @@
         <div class="card">
             <div class="card-header">
                 <form method="post" class="row">
-                    <div class="col-4">
-                        <input list="userSearch" name="userValue" class="form-control" placeholder="Enter name..." />
+                    <div class="col-3">
+                        <input list="userSearch" name="userValue" class="form-control" placeholder="Enter name..." required/>
                         <datalist id="userSearch">
                             @foreach (var user in dropdownListUsers)
                             {
-                                <option value="@user.uniqueId">@user.firstName @user.lastName @user.</option>
+                                <option value="@user.uniqueId">@user.firstName @user.lastName</option>
                             }
                         </datalist>
                     </div>
-                    <div class="col-4">
-                        <input type="date" class="form-control" format="dd-mm-yyyy" />
+                    <div class="col-3">
+                        <input type="date" class="form-control" format="dd-mm-yyyy" name="searchDate" />
                     </div>
-                    <div class="col-4">
-                        <button type="submit" class="btn btn-outline-primary">Affected Users</button>
-                        <button type="submit" class="btn btn-outline-primary">Affected Venues</button>
+                    <div class="col-3">
+                        <input type="radio" name="repType" value="people" />
+                        <label>People</label>
+                        <input type="radio" name="repType" value="venues" />
+                        <label>Venues</label>
                     </div>
-
+                    <div class="col-3">
+                        <button type="submit" class="btn btn-outline-primary">Generate Report</button>
+                    </div>
                 </form>
             </div>
         </div>
