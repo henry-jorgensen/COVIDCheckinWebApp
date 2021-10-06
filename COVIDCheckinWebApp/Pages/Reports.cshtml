@@ -29,15 +29,16 @@
     db.Open();
 
     //Filling the user dropdown list with users
-    SqlCommand userDropdown = new SqlCommand("SELECT firstName, LastName, uniqueId FROM Users", db);
+    SqlCommand userDropdown = new SqlCommand("SELECT firstName, LastName, phoneNumber, uniqueId FROM Users", db);
     SqlDataReader readerUser = userDropdown.ExecuteReader();
 
     while (readerUser.Read())
     {
         string firstName = readerUser.GetString(0);
         string lastName = readerUser.GetString(1);
-        string uniqueId = readerUser.GetString(2);
-        dropdownListUsers.Add(new CustomerDetail() { firstName = firstName, lastName = lastName, uniqueId = uniqueId });
+        string phoneNumber = readerUser.GetString(2);
+        string uniqueId = readerUser.GetString(3);
+        dropdownListUsers.Add(new CustomerDetail() { firstName = firstName, lastName = lastName, phoneNumber = phoneNumber, uniqueId = uniqueId });
     }
 
     readerUser.Close();
