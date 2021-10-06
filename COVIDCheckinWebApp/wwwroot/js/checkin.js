@@ -56,7 +56,7 @@ $("#checkinForm").submit(function (e) {
 
             setTimeout(function () {
                 $('#manualSuccessful').modal('hide')
-                html5QrCode.start({ facingMode: "user" }, config, qrCodeSuccessCallback);
+                toggleManual();
             }, 5000);
         },
         error: function (resp) {
@@ -68,7 +68,7 @@ $("#checkinForm").submit(function (e) {
             document.getElementById("unique").disabled = false;
             setTimeout(function () {
                 $('#uniqueFailure').modal('hide')
-                html5QrCode.start({ facingMode: "user" }, config, qrCodeSuccessCallback);
+                toggleManual();
             }, 5000);
         }
 
@@ -92,3 +92,15 @@ function sleep(ms) {
 }
 
 html5QrCode.start({ facingMode: "user" }, config, qrCodeSuccessCallback);
+
+function toggleQR() {
+    document.getElementById("QR").style.display = "none";
+    document.getElementById("manual").style.display = "";
+    html5QrCode.stop();
+}
+
+function toggleManual() {
+    document.getElementById("manual").style.display = "none";
+    document.getElementById("QR").style.display = "";
+    html5QrCode.start({ facingMode: "user" }, config, qrCodeSuccessCallback);
+}
